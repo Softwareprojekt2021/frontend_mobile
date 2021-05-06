@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/models/user.dart';
 import 'package:frontend_mobile/services/login_service.dart';
@@ -45,7 +46,7 @@ class _LoginState extends State<Login> {
                     ),
                     autocorrect: false,
                     validator: (value) =>
-                    value.isEmpty ? "E-Mail darf nicht leer sein" : null,
+                    !EmailValidator.validate(value) ? "E-Mail ist nicht gültig" : null,
                     onSaved: (value) =>
                       _email = value,
                   ),
@@ -61,7 +62,7 @@ class _LoginState extends State<Login> {
                     obscureText: true,
                     autocorrect: false,
                     validator: (value) =>
-                      value.length <= 7 ? "Passwort muss mindestens 8 Zeichen lang sein" : null,
+                      value.length <= 7 ? "Passwort muss mindestens 8 Zeichen haben" : null,
                     onSaved: (value) =>
                       _password = value,
                   ),

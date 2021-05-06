@@ -33,6 +33,7 @@ dependencies:
   flushbar: ^1.10.4
   flutter_redux: ^0.8.2
   overlay_support: ^1.2.1
+  email_validator: ^2.0.1
 
 
 dev_dependencies:

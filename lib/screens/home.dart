@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/components/side_bar.dart';
-import 'package:frontend_mobile/services/store_service.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -20,13 +19,7 @@ class _HomeState extends State<Home> {
           centerTitle: true,
         ),
         body: Center(
-            child: ElevatedButton(
-              onPressed: () {
-                print(StoreService.store.state.token);
-                print(StoreService.store.state.user.email);
-              },
-              child: Text("DEBUG"),
-            ),
+
           )
     );
   }
