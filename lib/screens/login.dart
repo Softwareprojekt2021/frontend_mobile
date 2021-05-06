@@ -32,9 +32,7 @@ class _LoginState extends State<Login> {
         body: Center(
           child: Form(
             key: formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: ListView(
               children: [
                 Padding(
                   padding:
@@ -57,7 +55,7 @@ class _LoginState extends State<Login> {
                   child: TextFormField(
                     decoration: InputDecoration(
                       labelText: "Passwort",
-                      icon: Icon(Icons.lock_rounded),
+                      icon: Icon(Icons.lock),
                     ),
                     obscureText: true,
                     autocorrect: false,

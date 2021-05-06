@@ -27,6 +27,14 @@ class _SideBarState extends State<SideBar> {
               Navigator.pushNamed(context, "/login");
             },
           ),
+          ListTile(
+            title: Text("Registrieren"),
+            trailing: Icon(Icons.app_registration),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, "/register");
+            },
+          ),
         ],
       ) : ListView(
         children: [
