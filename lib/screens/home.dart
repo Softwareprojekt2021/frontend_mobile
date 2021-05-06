@@ -23,6 +23,7 @@ class _HomeState extends State<Home> {
             child: ElevatedButton(
               onPressed: () {
                 print(StoreService.store.state.token);
+                print(StoreService.store.state.user.email);
               },
               child: Text("DEBUG"),
             ),

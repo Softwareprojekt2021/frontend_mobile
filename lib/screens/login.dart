@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_mobile/models/user.dart';
 import 'package:frontend_mobile/services/login_service.dart';
 import 'package:frontend_mobile/services/store_service.dart';
+import 'package:frontend_mobile/services/user_service.dart';
 import 'package:frontend_mobile/stores/token_action.dart';
+import 'package:frontend_mobile/stores/user_action.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class Login extends StatefulWidget {
@@ -14,6 +17,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
   final _loginService = LoginService();
+  final _userService = UserService();
 
   String _email, _password;
 
@@ -81,12 +85,13 @@ class _LoginState extends State<Login> {
     if (form.validate()) {
       form.save();
 
-      String token;
-
       try {
-        token = await _loginService.login(_email, _password);
-
+        String token = await _loginService.login(_email, _password);
         StoreService.store.dispatch(SetTokenAction(token));
+
+        User user = await _userService.fetchUser();
+        StoreService.store.dispatch(SetUserAction(user));
+
         Navigator.pushNamed(context, "/home");
       } catch (error) {
         showSimpleNotification(

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:frontend_mobile/util/app_url.dart';
 import 'package:http/http.dart';
 
@@ -19,7 +18,7 @@ class LoginService {
     if(response.statusCode == 404) {
       throw("Anmeldeinformationen sind falsch");
     } else if (response.statusCode != 200) {
-      throw("Serverfehler");
+      throw(response.body);
     }
 
     return response.body;

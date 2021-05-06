@@ -8,7 +8,7 @@ class UserService {
   fetchUser() async {
     Response response = await get(
       Uri.parse(AppUrl.user),
-      headers: {'Authorzation': 'Bearer' + StoreService.store.state.token},
+      headers: {'Authorization': 'Bearer ' + StoreService.store.state.token},
     );
 
     return User.fromJson(json.decode(response.body));
