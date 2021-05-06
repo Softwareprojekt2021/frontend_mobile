@@ -7,7 +7,7 @@ class SideBar extends StatelessWidget {
       child: ListView(
         children: [
           ListTile(
-            title: Text("Login"),
+            title: Text("Anmelden"),
             trailing: Icon(Icons.arrow_forward),
             onTap: () {
               Navigator.pop(context);
