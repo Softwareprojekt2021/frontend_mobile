@@ -6,6 +6,7 @@ import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/services/user_service.dart';
 import 'package:frontend_mobile/stores/token_action.dart';
 import 'package:frontend_mobile/stores/user_action.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class Login extends StatefulWidget {
@@ -19,6 +20,7 @@ class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
   final _loginService = LoginService();
   final _userService = UserService();
+  bool _saving = false;
 
   String _email, _password;
 
@@ -29,53 +31,57 @@ class _LoginState extends State<Login> {
           title: Text("Anmelden"),
           centerTitle: true,
         ),
-        body: Center(
-          child: Form(
-            key: formKey,
-            child: ListView(
-              children: [
-                Padding(
-                  padding:
-                      EdgeInsets.only(top: 5, bottom: 5, left: 50, right: 60),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: "E-Mail",
-                      icon: Icon(Icons.email_rounded),
+        body: ModalProgressHUD(
+          inAsyncCall: _saving,
+          child: Center(
+            child: Form(
+              key: formKey,
+              child: ListView(
+                children: [
+                  Padding(
+                    padding:
+                        EdgeInsets.only(top: 5, bottom: 5, left: 50, right: 60),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: "E-Mail",
+                        icon: Icon(Icons.email_rounded),
+                      ),
+                      autocorrect: false,
+                      validator: (value) =>
+                      !EmailValidator.validate(value) ? "E-Mail ist nicht gültig" : null,
+                      onSaved: (value) =>
+                        _email = value,
                     ),
-                    autocorrect: false,
-                    validator: (value) =>
-                    !EmailValidator.validate(value) ? "E-Mail ist nicht gültig" : null,
-                    onSaved: (value) =>
-                      _email = value,
                   ),
-                ),
-                Padding(
-                  padding:
-                      EdgeInsets.only(top: 5, bottom: 5, left: 50, right: 60),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: "Passwort",
-                      icon: Icon(Icons.lock),
+                  Padding(
+                    padding:
+                        EdgeInsets.only(top: 5, bottom: 5, left: 50, right: 60),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: "Passwort",
+                        icon: Icon(Icons.lock),
+                      ),
+                      obscureText: true,
+                      autocorrect: false,
+                      validator: (value) =>
+                        value.length <= 7 ? "Passwort muss mindestens 8 Zeichen haben" : null,
+                      onSaved: (value) =>
+                        _password = value,
                     ),
-                    obscureText: true,
-                    autocorrect: false,
-                    validator: (value) =>
-                      value.length <= 7 ? "Passwort muss mindestens 8 Zeichen haben" : null,
-                    onSaved: (value) =>
-                      _password = value,
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
-                  child: ElevatedButton(
-                    onPressed: onPressed,
-                    child: Text("Anmelden"),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
+                    child: ElevatedButton(
+                      onPressed: onPressed,
+                      child: Text("Anmelden"),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ));
+          )
+        )
+    );
   }
 
   Future<void> onPressed() async {
@@ -83,6 +89,9 @@ class _LoginState extends State<Login> {
 
     if (form.validate()) {
       form.save();
+      setState(() {
+        _saving = true;
+      });
 
       try {
         String token = await _loginService.login(_email, _password);
@@ -91,8 +100,15 @@ class _LoginState extends State<Login> {
         User user = await _userService.fetchUser();
         StoreService.store.dispatch(SetUserAction(user));
 
+        setState(() {
+          _saving = false;
+        });
         Navigator.pushNamed(context, "/home");
       } catch (error) {
+        setState(() {
+          _saving = false;
+        });
+
         showSimpleNotification(
           Text("Fehler: " + error.toString()),
           background: Colors.red
