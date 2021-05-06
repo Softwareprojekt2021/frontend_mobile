@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_mobile/screens/home.dart';
 import 'package:frontend_mobile/screens/login.dart';
 
 void main() {
@@ -6,6 +7,9 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  final Map<String, WidgetBuilder> routes = {
+    '/login': (context) => Login(),
+  };
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -23,7 +27,8 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Login(),
+      home: Home(),
+      routes: routes,
     );
   }
 }
