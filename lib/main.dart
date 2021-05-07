@@ -1,7 +1,9 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:frontend_mobile/screens/home.dart';
 import 'package:frontend_mobile/screens/login.dart';
+import 'package:frontend_mobile/screens/register.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/stores/global_state.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -32,7 +34,8 @@ class MyApp extends StatelessWidget {
           home: Home(),
           routes: {
             '/login': (context) => Login(),
-            '/home': (context) => Home()
+            '/home': (context) => Home(),
+            '/register': (context) => Register()
           },
         )
       )

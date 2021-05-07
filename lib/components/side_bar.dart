@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/services/store_service.dart';
-import 'package:overlay_support/overlay_support.dart';
+import 'package:frontend_mobile/util/notification.dart';
 
 class SideBar extends StatefulWidget {
   @override
@@ -25,6 +25,14 @@ class _SideBarState extends State<SideBar> {
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, "/login");
+            },
+          ),
+          ListTile(
+            title: Text("Registrieren"),
+            trailing: Icon(Icons.app_registration),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, "/register");
             },
           ),
         ],
@@ -52,10 +60,7 @@ class _SideBarState extends State<SideBar> {
             onTap: () {
               StoreService.setupStore();
               Navigator.pushNamed(context, "/home");
-              showSimpleNotification(
-                  Text("Abgemeldet"),
-                  background: Colors.green
-              );
+              NotificationOverlay.success("Erfolgreich abgemeldet");
             },
           ),
         ],
