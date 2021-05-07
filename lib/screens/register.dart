@@ -140,6 +140,8 @@ class _RegisterState extends State<Register> {
                       items: _universities,
                       value: _user.university,
                       hint: Text("Deine Uni/FH"),
+                      validator: (value) =>
+                        value == null ? "Uni/FH darf nicht leer sein" : null,
                       onChanged: (value) {
                         setState(() {
                           _user.university = value;
@@ -157,9 +159,9 @@ class _RegisterState extends State<Register> {
                       ),
                       autocorrect: false,
                       validator: (value) =>
-                      value.isEmpty ? "Studiengang darf nicht leer sein" : null,
+                        value.isEmpty ? "Studiengang darf nicht leer sein" : null,
                       onSaved: (value) =>
-                      _user.course = value,
+                        _user.course = value,
                     ),
                   ),
                   Padding(
