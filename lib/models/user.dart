@@ -1,13 +1,14 @@
 //TODO Check json fields if login backend has been implemented
 class User {
   int id, admin;
-  String email, firstName, lastName, course, profilePicture, university;
+  String email, firstName, lastName, course, profilePicture, university, password;
 
-  User(this.id, this.email, this.firstName, this.lastName, this.course, this.profilePicture, this.university, this.admin);
+  User({this.id, this.email, this.password, this.firstName, this.lastName, this.course, this.profilePicture, this.university, this.admin});
 
   User.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         email = json['email'],
+        password = json['password'],
         firstName = json['first_name'],
         lastName = json['last_name'],
         course = json['course'],
@@ -18,6 +19,7 @@ class User {
   Map<String, dynamic> toJson() => {
     'id': id,
     'email': email,
+    'password': password,
     'first_name': firstName,
     'last_name': lastName,
     'course': course,

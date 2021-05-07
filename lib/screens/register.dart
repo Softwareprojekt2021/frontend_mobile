@@ -1,6 +1,12 @@
+import 'dart:async';
+
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend_mobile/models/user.dart';
+import 'package:frontend_mobile/services/user_service.dart';
+import 'package:frontend_mobile/util/notification.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -11,8 +17,10 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   final formKey = GlobalKey<FormState>();
-  String _email, _password, _passwordRepeat, _firstName, _lastName, _course, _university;
+  final _userService = UserService();
+  String _passwordRepeat;
   bool _saving = false;
+  User _user = new User();
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +47,7 @@ class _RegisterState extends State<Register> {
                       validator: (value) =>
                       !EmailValidator.validate(value) ? "E-Mail ist nicht gültig" : null,
                       onSaved: (value) =>
-                      _email = value,
+                      _user.email = value,
                     ),
                   ),
                   Padding(
@@ -54,7 +62,7 @@ class _RegisterState extends State<Register> {
                       validator: (value) =>
                       value.isEmpty ? "Vorname darf nicht leer sein" : null,
                       onSaved: (value) =>
-                      _firstName = value,
+                      _user.firstName = value,
                     ),
                   ),
                   Padding(
@@ -69,7 +77,7 @@ class _RegisterState extends State<Register> {
                       validator: (value) =>
                       value.isEmpty ? "Nachname darf nicht leer sein" : null,
                       onSaved: (value) =>
-                      _lastName = value,
+                      _user.lastName = value,
                     ),
                   ),
                   Padding(
@@ -85,7 +93,7 @@ class _RegisterState extends State<Register> {
                       validator: (value) =>
                         value.length <= 7 ? "Passwort muss mindestens 8 Zeichen haben" : null,
                       onSaved: (value) =>
-                        _password = value,
+                        _user.password = value,
                       onChanged: (value) =>
                         _passwordRepeat = value,
                     ),
@@ -130,7 +138,7 @@ class _RegisterState extends State<Register> {
                       validator: (value) =>
                       value.isEmpty ? "Studiengang darf nicht leer sein" : null,
                       onSaved: (value) =>
-                      _course = value,
+                      _user.course = value,
                     ),
                   ),
                   Padding(
@@ -153,6 +161,26 @@ class _RegisterState extends State<Register> {
     if (form.validate()) {
       form.save();
 
+      setState(() {
+        _saving = true;
+      });
+
+      try {
+        await _userService.registerUser(_user);
+
+        setState(() {
+          _saving = false;
+        });
+
+        NotificationOverlay.success("Benutzer wurde erstellt");
+        Navigator.pushNamed(context, "/login");
+      } catch (error) {
+        setState(() {
+        _saving = false;
+        });
+
+        NotificationOverlay.error(error.toString());
+      }
     }
   }
 }
