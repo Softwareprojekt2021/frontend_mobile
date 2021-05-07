@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/util/notification.dart';
-import 'package:overlay_support/overlay_support.dart';
 
 class SideBar extends StatefulWidget {
   @override

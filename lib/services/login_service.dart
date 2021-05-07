@@ -24,7 +24,7 @@ class LoginService {
       }
 
       return response.body;
-    } on TimeoutException catch (error) {
+    } on TimeoutException {
       throw("Server ist nicht erreichbar");
     }
   }

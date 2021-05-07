@@ -6,7 +6,6 @@ import 'package:frontend_mobile/models/user.dart';
 import 'package:frontend_mobile/services/user_service.dart';
 import 'package:frontend_mobile/util/notification.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:overlay_support/overlay_support.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -21,6 +20,22 @@ class _RegisterState extends State<Register> {
   String _passwordRepeat;
   bool _saving = false;
   User _user = new User();
+  var _universities = <DropdownMenuItem>[];
+
+  //TODO Get Data from Backend
+  _loadUniversities() {
+    setState(() {
+      _universities.add(DropdownMenuItem(child: Text("FH Bielefeld"), value: "FH Bielefeld"));
+      _universities.add(DropdownMenuItem(child: Text("FH Bielefeld (Minden)"), value: "FH Bielefeld (Minden)"));
+      _universities.add(DropdownMenuItem(child: Text("Uni Bielefeld"), value: "Uni Bielefeld"));
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUniversities();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,12 +133,18 @@ class _RegisterState extends State<Register> {
                   Padding(
                     padding:
                     EdgeInsets.only(top: 5, bottom: 5, left: 50, right: 60),
-                    //TODO Add Data
                     child: DropdownButtonFormField(
                       decoration: InputDecoration(
-                        labelText: "Deine Uni/FH",
                         icon: Icon(Icons.apartment),
                       ),
+                      items: _universities,
+                      value: _user.university,
+                      hint: Text("Deine Uni/FH"),
+                      onChanged: (value) {
+                        setState(() {
+                          _user.university = value;
+                        });
+                      }
                     ),
                   ),
                   Padding(

@@ -19,7 +19,7 @@ class UserService {
       }
 
       return User.fromJson(json.decode(response.body));
-    } on TimeoutException catch (error) {
+    } on TimeoutException {
       throw("Server ist nicht erreichbar");
     }
   }
@@ -39,7 +39,7 @@ class UserService {
       }
 
       return;
-    } on TimeoutException catch (error) {
+    } on TimeoutException {
       throw("Server ist nicht erreichbar");
     }
   }
