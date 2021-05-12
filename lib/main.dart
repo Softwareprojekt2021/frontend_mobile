@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:frontend_mobile/screens/home.dart';
 import 'package:frontend_mobile/screens/login.dart';
+import 'package:frontend_mobile/screens/profile.dart';
 import 'package:frontend_mobile/screens/register.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/stores/global_state.dart';
@@ -35,7 +36,8 @@ class MyApp extends StatelessWidget {
           routes: {
             '/login': (context) => Login(),
             '/home': (context) => Home(),
-            '/register': (context) => Register()
+            '/register': (context) => Register(),
+            '/profile': (context) => Profile()
           },
         )
       )
