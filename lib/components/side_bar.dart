@@ -44,7 +44,15 @@ class _SideBarState extends State<SideBar> {
             accountEmail: Text(StoreService.store.state.user.email),
             //accountName: Text(StoreService.store.state.user.firstName + " " + StoreService.store.state.user.lastName),
             accountName: Text(fName + " " + lName),
-            currentAccountPicture: setupAvatar(20)
+            currentAccountPicture: setupAvatar(StoreService.store.state.user, 20)
+          ),
+          ListTile(
+            title: Text("Startseite"),
+            trailing: Icon(Icons.home),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, "/home");
+            },
           ),
           ListTile(
             title: Text("Profil"),

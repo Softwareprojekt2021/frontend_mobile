@@ -19,7 +19,8 @@ class _ProfileState extends State<Profile> {
   final formKey = GlobalKey<FormState>();
   String _passwordRepeat;
   bool _saving = false;
-  User _user = StoreService.store.state.user;
+  //Clone Object because Flutter would instead call by Reference
+  User _user = StoreService.store.state.user.clone();
   var _universities = <DropdownMenuItem>[];
 
   //TODO Get Data from Backend
@@ -56,7 +57,7 @@ class _ProfileState extends State<Profile> {
                   EdgeInsets.only(top: 10, bottom: 5, left: 50, right: 60),
                   child: Column(
                     children: [
-                      setupAvatar(50),
+                      setupAvatar(_user, 50),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -71,7 +72,9 @@ class _ProfileState extends State<Profile> {
                             icon: Icon(Icons.delete, color: Colors.blue),
                             tooltip: 'Bild löschen',
                             onPressed: () {
-
+                              setState(() {
+                                _user.profilePicture = null;
+                              });
                             },
                           )
                         ],

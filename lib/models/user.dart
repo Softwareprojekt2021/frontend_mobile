@@ -27,4 +27,6 @@ class User {
     'university': university,
     'admin': admin
   };
+
+  User clone() => User(id: id, email: email, password: password, firstName: firstName, lastName: lastName, course: course, profilePicture: profilePicture, university: university, admin: admin);
 }

@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/models/user.dart';
-import 'package:frontend_mobile/services/store_service.dart';
 
-Widget setupAvatar(double radius) {
-  User _user = StoreService.store.state.user;
-
-  if (_user.profilePicture == null) {
+Widget setupAvatar(User user, double radius) {
+  if (user.profilePicture == null) {
     return CircleAvatar(
         backgroundColor: Colors.grey,
         radius: radius,
         child: Text(
-          _user.firstName[0] + _user.lastName[0],
+          user.firstName[0] + user.lastName[0],
           textScaleFactor: 2,
           style: TextStyle(color: Colors.white),
         )
@@ -19,7 +16,7 @@ Widget setupAvatar(double radius) {
     return CircleAvatar(
         backgroundColor: Colors.grey,
         radius: radius,
-        backgroundImage: Image.network(_user.profilePicture).image,
+        backgroundImage: Image.network(user.profilePicture).image,
     );
   }
 }
