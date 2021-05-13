@@ -26,14 +26,14 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModalProgressHUD(
+      inAsyncCall: _saving,
+      child: Scaffold(
         appBar: AppBar(
           title: Text("Anmelden"),
           centerTitle: true,
         ),
-        body: ModalProgressHUD(
-          inAsyncCall: _saving,
-          child: Center(
+        body: Center(
             child: Form(
               key: formKey,
               child: ListView(

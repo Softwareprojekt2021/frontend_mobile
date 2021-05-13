@@ -39,14 +39,14 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModalProgressHUD(
+      inAsyncCall: _saving,
+      child: Scaffold(
         appBar: AppBar(
           title: Text("Registrierung"),
           centerTitle: true,
         ),
-        body: ModalProgressHUD(
-          inAsyncCall: _saving,
-          child: Form(
+        body: Form(
               key: formKey,
               child: ListView(
                 children: [
