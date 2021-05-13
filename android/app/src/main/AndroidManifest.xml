@@ -2,6 +2,7 @@
     package="com.studiboerse.frontend_mobile">
    <application
         android:label="Studibörse"
+        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

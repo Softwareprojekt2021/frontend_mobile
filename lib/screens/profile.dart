@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:frontend_mobile/components/side_bar.dart';
 import 'package:frontend_mobile/models/user.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/util/avatar.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class Profile extends StatefulWidget {
@@ -22,6 +24,9 @@ class _ProfileState extends State<Profile> {
   //Clone Object because Flutter would instead call by Reference
   User _user = StoreService.store.state.user.clone();
   var _universities = <DropdownMenuItem>[];
+  //0 = Not Changed, 1 = Changed, 2 = Deleted
+  int _imageState = 0;
+  final picker = ImagePicker();
 
   //TODO Get Data from Backend
   _loadUniversities() {
@@ -29,6 +34,47 @@ class _ProfileState extends State<Profile> {
       _universities.add(DropdownMenuItem(child: Text("FH Bielefeld"), value: "FH Bielefeld"));
       _universities.add(DropdownMenuItem(child: Text("FH Bielefeld (Minden)"), value: "FH Bielefeld (Minden)"));
       _universities.add(DropdownMenuItem(child: Text("Uni Bielefeld"), value: "Uni Bielefeld"));
+    });
+  }
+
+  //TODO Investigate Frame Time warnings
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _user.profilePicture = File(pickedFile.path).path;
+        _imageState = 1;
+      }
+    });
+  }
+
+  Future<void> save() async {
+    var form = formKey.currentState;
+
+    if (form.validate()) {
+      form.save();
+
+
+      setState(() {
+        _saving = true;
+      });
+
+
+    }
+
+    setState(() {
+      _saving = false;
+    });
+  }
+
+  Future<void> delete() async {
+    setState(() {
+      _saving = true;
+    });
+
+    setState(() {
+      _saving = false;
     });
   }
 
@@ -63,10 +109,8 @@ class _ProfileState extends State<Profile> {
                         children: [
                           IconButton(
                             icon: Icon(Icons.upload_rounded, color: Colors.blue),
-                            tooltip: 'Bild hochladen',
-                            onPressed: () {
-
-                            },
+                            tooltip: 'Bild hinzufügen',
+                            onPressed: getImage,
                           ),
                           IconButton(
                             icon: Icon(Icons.delete, color: Colors.blue),
@@ -74,6 +118,7 @@ class _ProfileState extends State<Profile> {
                             onPressed: () {
                               setState(() {
                                 _user.profilePicture = null;
+                                _imageState = 2;
                               });
                             },
                           )
@@ -219,24 +264,5 @@ class _ProfileState extends State<Profile> {
           )
       ),
     );
-  }
-
-  Future<void> save() async {
-    var form = formKey.currentState;
-
-    if (form.validate()) {
-      form.save();
-
-      /*
-      setState(() {
-        _saving = true;
-      });
-       */
-
-    }
-  }
-
-  Future<void> delete() async {
-
   }
 }
