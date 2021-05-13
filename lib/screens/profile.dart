@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:frontend_mobile/components/side_bar.dart';
 import 'package:frontend_mobile/models/user.dart';
 import 'package:frontend_mobile/services/store_service.dart';
+import 'package:frontend_mobile/services/user_service.dart';
 import 'package:frontend_mobile/util/avatar.dart';
+import 'package:frontend_mobile/util/notification.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -19,14 +21,14 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final formKey = GlobalKey<FormState>();
+  final picker = ImagePicker();
+  final _userService = UserService();
+
   String _passwordRepeat;
   bool _saving = false;
   //Clone Object because Flutter would instead call by Reference
   User _user = StoreService.store.state.user.clone();
   var _universities = <DropdownMenuItem>[];
-  //0 = Not Changed, 1 = Changed, 2 = Deleted
-  int _imageState = 0;
-  final picker = ImagePicker();
 
   //TODO Get Data from Backend
   _loadUniversities() {
@@ -44,9 +46,33 @@ class _ProfileState extends State<Profile> {
     setState(() {
       if (pickedFile != null) {
         _user.profilePicture = File(pickedFile.path).path;
-        _imageState = 1;
       }
     });
+  }
+
+  void _showDeleteDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Profil löschen"),
+            content: Text("Willst du wirklich dein Profil löschen?"),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () async {
+                  Navigator.pop(context, true);
+                  await delete();
+                },
+              ),
+              TextButton(
+                child: Text("Abbrechen"),
+                onPressed: () => Navigator.pop(context, false),
+              )
+            ],
+          );
+        }
+    );
   }
 
   Future<void> save() async {
@@ -55,12 +81,9 @@ class _ProfileState extends State<Profile> {
     if (form.validate()) {
       form.save();
 
-
       setState(() {
         _saving = true;
       });
-
-
     }
 
     setState(() {
@@ -73,9 +96,23 @@ class _ProfileState extends State<Profile> {
       _saving = true;
     });
 
-    setState(() {
-      _saving = false;
-    });
+    try {
+      await _userService.deleteAccount();
+
+      setState(() {
+        _saving = false;
+      });
+
+      StoreService.setupStore();
+      Navigator.pushNamed(context, "/home");
+      NotificationOverlay.success("Profil wurde gelöscht");
+    } catch (error) {
+      setState(() {
+        _saving = false;
+      });
+
+      NotificationOverlay.error(error.toString());
+    }
   }
 
   @override
@@ -118,7 +155,6 @@ class _ProfileState extends State<Profile> {
                             onPressed: () {
                               setState(() {
                                 _user.profilePicture = null;
-                                _imageState = 2;
                               });
                             },
                           )
@@ -255,7 +291,7 @@ class _ProfileState extends State<Profile> {
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
                   child: ElevatedButton(
-                    onPressed: delete,
+                    onPressed: _showDeleteDialog,
                     child: Text("Profil löschen"),
                   ),
                 ),

@@ -43,4 +43,25 @@ class UserService {
       throw("Server ist nicht erreichbar");
     }
   }
+
+  updateUser(User user) async {
+
+  }
+
+  deleteAccount() async {
+    try {
+      Response response = await delete(
+        Uri.parse(AppUrl.user),
+        headers: {'Authorization': 'Bearer ' + StoreService.store.state.token}
+      ).timeout(const Duration(seconds: 10));
+
+      if(response.statusCode != 200) {
+        throw(response.body);
+      }
+
+      return;
+    } on TimeoutException {
+      throw("Server ist nicht erreichbar");
+    }
+  }
 }

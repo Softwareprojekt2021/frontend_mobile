@@ -100,6 +100,7 @@ class _LoginState extends State<Login> {
           User debugUser = new User(id: 0, email: "test@test.de", firstName: "Max", lastName: "Mustermann", course: "Informatik", university: "FH Bielefeld (Minden)", admin: 0, profilePicture: "https://ih1.redbubble.net/image.450287996.4220/flat,1000x1000,075,f.u1.jpg");
 
           StoreService.store.dispatch(SetUserAction(debugUser));
+          StoreService.store.dispatch(SetTokenAction("aaaaaaaaaaaaaaaaaaaaaaaaaa"));
         } else {
           String token = await _loginService.login(_email, _password);
           StoreService.store.dispatch(SetTokenAction(token));
