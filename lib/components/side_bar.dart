@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/services/store_service.dart';
+import 'package:frontend_mobile/util/avatar.dart';
 import 'package:frontend_mobile/util/notification.dart';
 
 class SideBar extends StatefulWidget {
@@ -43,16 +44,23 @@ class _SideBarState extends State<SideBar> {
             accountEmail: Text(StoreService.store.state.user.email),
             //accountName: Text(StoreService.store.state.user.firstName + " " + StoreService.store.state.user.lastName),
             accountName: Text(fName + " " + lName),
-            currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.grey,
-                radius: 70,
-                child: Text(
-                  //TODO Placeholder
-                  fName[0] + lName[0],
-                  textScaleFactor: 2,
-                  style: TextStyle(color: Colors.white),
-                )
-            )
+            currentAccountPicture: setupAvatar(StoreService.store.state.user, 20)
+          ),
+          ListTile(
+            title: Text("Startseite"),
+            trailing: Icon(Icons.home),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, "/home");
+            },
+          ),
+          ListTile(
+            title: Text("Profil"),
+            trailing: Icon(Icons.account_circle),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, "/profile");
+            },
           ),
           ListTile(
             title: Text("Abmelden"),

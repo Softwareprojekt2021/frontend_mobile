@@ -26,14 +26,14 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModalProgressHUD(
+      inAsyncCall: _saving,
+      child: Scaffold(
         appBar: AppBar(
           title: Text("Anmelden"),
           centerTitle: true,
         ),
-        body: ModalProgressHUD(
-          inAsyncCall: _saving,
-          child: Center(
+        body: Center(
             child: Form(
               key: formKey,
               child: ListView(
@@ -94,11 +94,20 @@ class _LoginState extends State<Login> {
       });
 
       try {
-        String token = await _loginService.login(_email, _password);
-        StoreService.store.dispatch(SetTokenAction(token));
+        //TODO Remove if Backend is working
+        if (_email == "test@test.de" && _password == "12345678") {
+          //DEBUG
+          User debugUser = new User(id: 0, email: "test@test.de", firstName: "Max", lastName: "Mustermann", course: "Informatik", university: "FH Bielefeld (Minden)", admin: 0, profilePicture: "https://ih1.redbubble.net/image.450287996.4220/flat,1000x1000,075,f.u1.jpg");
 
-        User user = await _userService.fetchUser();
-        StoreService.store.dispatch(SetUserAction(user));
+          StoreService.store.dispatch(SetUserAction(debugUser));
+          StoreService.store.dispatch(SetTokenAction("aaaaaaaaaaaaaaaaaaaaaaaaaa"));
+        } else {
+          String token = await _loginService.login(_email, _password);
+          StoreService.store.dispatch(SetTokenAction(token));
+
+          User user = await _userService.fetchUser();
+          StoreService.store.dispatch(SetUserAction(user));
+        }
 
         setState(() {
           _saving = false;
