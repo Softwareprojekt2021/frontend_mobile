@@ -43,6 +43,8 @@ class _CreateOffer extends State<CreateOffer> {
   Future<void> _createOffer() async {
     var form = formKey.currentState;
 
+    FocusScope.of(context).unfocus();
+
     if (form.validate()) {
       form.save();
 
@@ -57,8 +59,7 @@ class _CreateOffer extends State<CreateOffer> {
           _loading = false;
         });
 
-        //TODO Change to /myOffers when implemented
-        Navigator.pushNamed(context, "/home");
+        Navigator.pushNamed(context, "/createdOffers");
         NotificationOverlay.success("Angebot wurde erstellt");
       } catch (error) {
         setState(() {
@@ -175,7 +176,6 @@ class _CreateOffer extends State<CreateOffer> {
     return ModalProgressHUD(
       inAsyncCall: _loading,
       child: Scaffold(
-          drawer: SideBar(),
           appBar: AppBar(
             title: Text("Angebot erstellen"),
             centerTitle: true,
@@ -261,9 +261,8 @@ class _CreateOffer extends State<CreateOffer> {
                       autocorrect: false,
                       keyboardType: TextInputType.number,
                       controller: priceFormat,
-                      validator: (value) =>
-                        value.isEmpty ? "Preis darf nicht leer sein" : null,
-                      onSaved: (value) => _offer.price = value as double,
+                      validator: (value) => priceFormat.numberValue < 0.01 ? "Preis muss mindestens 0,01€ sein" : null,
+                      onSaved: (value) => _offer.price = priceFormat.numberValue,
                     ),
                   ),
                 ),

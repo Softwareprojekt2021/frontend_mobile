@@ -55,6 +55,14 @@ class _SideBarState extends State<SideBar> {
             },
           ),
           ListTile(
+            title: Text("Meine Angebote"),
+            trailing: Icon(Icons.local_offer),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, "/createdOffers");
+            },
+          ),
+          ListTile(
             title: Text("Profil"),
             trailing: Icon(Icons.account_circle),
             onTap: () {
