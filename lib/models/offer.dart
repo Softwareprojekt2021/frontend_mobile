@@ -5,7 +5,7 @@ class Offer {
   String title, compensationType, description, category;
   List<String> pictures;
 
-  Offer({this.id, this.title, this.description, this,compensationType, this.category, this.price, this.sold, this.pictures});
+  Offer({this.id, this.title, this.description, this.compensationType, this.category, this.price, this.sold, this.pictures});
 
   Offer.fromJson(Map<String, dynamic> json)
       : id = json['id'],
