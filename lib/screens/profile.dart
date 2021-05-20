@@ -78,6 +78,8 @@ class _ProfileState extends State<Profile> {
   Future<void> save() async {
     var form = formKey.currentState;
 
+    FocusScope.of(context).unfocus();
+
     if (form.validate()) {
       form.save();
 

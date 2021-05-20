@@ -87,6 +87,8 @@ class _LoginState extends State<Login> {
   Future<void> onPressed() async {
     var form = formKey.currentState;
 
+    FocusScope.of(context).unfocus();
+
     if (form.validate()) {
       form.save();
       setState(() {

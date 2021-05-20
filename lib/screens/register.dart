@@ -181,6 +181,8 @@ class _RegisterState extends State<Register> {
   Future<void> onPressed() async {
     var form = formKey.currentState;
 
+    FocusScope.of(context).unfocus();
+
     if (form.validate()) {
       form.save();
 
