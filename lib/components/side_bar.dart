@@ -35,7 +35,7 @@ class _SideBarState extends State<SideBar> {
               Navigator.pop(context);
               Navigator.pushNamed(context, "/register");
             },
-          ),
+          )
         ],
       ) : ListView(
         children: [
