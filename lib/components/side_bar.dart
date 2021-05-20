@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/services/store_service.dart';
-import 'package:frontend_mobile/util/avatar.dart';
+import 'package:frontend_mobile/components/avatar.dart';
 import 'package:frontend_mobile/util/notification.dart';
 
 class SideBar extends StatefulWidget {

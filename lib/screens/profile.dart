@@ -7,7 +7,7 @@ import 'package:frontend_mobile/components/side_bar.dart';
 import 'package:frontend_mobile/models/user.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/services/user_service.dart';
-import 'package:frontend_mobile/util/avatar.dart';
+import 'package:frontend_mobile/components/avatar.dart';
 import 'package:frontend_mobile/util/notification.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
