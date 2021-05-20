@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:frontend_mobile/screens/create_offer.dart';
 import 'package:frontend_mobile/screens/created_offers.dart';
+import 'package:frontend_mobile/screens/edit_offer.dart';
 import 'package:frontend_mobile/screens/home.dart';
 import 'package:frontend_mobile/screens/login.dart';
 import 'package:frontend_mobile/screens/profile.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
             '/profile': (context) => Profile(),
             '/createOffer': (context) => CreateOffer(),
             '/createdOffers': (context) => CreatedOffers(),
+            '/editOffer': (context) => EditOffer(),
           },
         )
       )

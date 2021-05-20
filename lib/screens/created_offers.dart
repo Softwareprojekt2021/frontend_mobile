@@ -33,7 +33,7 @@ class _CreatedOffers extends State<CreatedOffers> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditOffer(_offers[index])
+        builder: (context) => EditOffer(offer: _offers[index])
       )
     );
   }
