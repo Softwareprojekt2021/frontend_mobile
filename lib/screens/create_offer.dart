@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
-import 'package:frontend_mobile/components/side_bar.dart';
 import 'package:frontend_mobile/models/offer.dart';
 import 'package:frontend_mobile/services/offer_service.dart';
 import 'package:frontend_mobile/util/notification.dart';
@@ -28,7 +27,6 @@ class _CreateOffer extends State<CreateOffer> {
   int _showPrice = 1;
 
   var _categories = <DropdownMenuItem>[];
-
 
   Future<void> _loadCategories() async {
     List<String> _fetchedCategories = await _offerService.fetchCategories();
