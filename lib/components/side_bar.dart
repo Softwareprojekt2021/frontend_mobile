@@ -11,10 +11,6 @@ class SideBar extends StatefulWidget {
 }
 
 class _SideBarState extends State<SideBar> {
-  //TODO Debug
-  final String fName = "Max";
-  final String lName = "Mustermann";
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -40,10 +36,8 @@ class _SideBarState extends State<SideBar> {
       ) : ListView(
         children: [
           UserAccountsDrawerHeader(
-            //TODO If Backend has been implemented
             accountEmail: Text(StoreService.store.state.user.email),
-            //accountName: Text(StoreService.store.state.user.firstName + " " + StoreService.store.state.user.lastName),
-            accountName: Text(fName + " " + lName),
+            accountName: Text(StoreService.store.state.user.firstName + " " + StoreService.store.state.user.lastName),
             currentAccountPicture: setupAvatar(StoreService.store.state.user, 20)
           ),
           ListTile(
