@@ -1,9 +1,7 @@
-
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:frontend_mobile/util/format.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -31,6 +29,7 @@ class _EditOffer extends State<EditOffer> {
   int _showPrice;
 
   var _categories = <DropdownMenuItem>[];
+  var priceFormat = MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.', rightSymbol: '€');
 
   Future<void> _loadCategories() async {
     List<String> _fetchedCategories = await _offerService.fetchCategories();
@@ -42,14 +41,68 @@ class _EditOffer extends State<EditOffer> {
     }
   }
 
-  //TODO
-  Future<void> _updateOffer() async {}
+  Future<void> _updateOffer() async {
+    FocusScope.of(context).unfocus();
 
-  //TODO
-  Future<void> _deleteOffer() async {}
+    try {
+      setState(() {
+        _loading = true;
+      });
 
-  //TODO
-  Future<void> _setSold() async {}
+      await _offerService.updateOffer(_offer);
+
+      Navigator.pushNamed(context, "/createdOffers");
+      NotificationOverlay.success("Das Angebot wurde aktualisiert");
+    } catch (error) {
+      NotificationOverlay.error(error.toString());
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _deleteOffer() async {
+    FocusScope.of(context).unfocus();
+
+    try {
+      setState(() {
+        _loading = true;
+      });
+
+      await _offerService.deleteOffer(_offer.id);
+
+      Navigator.pushNamed(context, "/createdOffers");
+      NotificationOverlay.success("Das Angebot wurde gelöscht");
+    } catch (error) {
+      NotificationOverlay.error(error.toString());
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _setSold() async {
+    FocusScope.of(context).unfocus();
+
+    try {
+      setState(() {
+        _loading = true;
+      });
+
+      await _offerService.offerSold(_offer.id);
+
+      Navigator.pushNamed(context, "/createdOffers");
+      NotificationOverlay.success("Das Angebot wurde als verkauft markiert");
+    } catch (error) {
+      NotificationOverlay.error(error.toString());
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
@@ -63,6 +116,56 @@ class _EditOffer extends State<EditOffer> {
         _offer.pictures.add(File(pickedFile.path).path);
       });
     }
+  }
+
+  void _showDeleteDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Angebot löschen"),
+            content: Text("Willst du wirklich das Angebot löschen?"),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () async {
+                  Navigator.pop(context, true);
+                  await _deleteOffer();
+                },
+              ),
+              TextButton(
+                child: Text("Abbrechen"),
+                onPressed: () => Navigator.pop(context, false),
+              )
+            ],
+          );
+        }
+    );
+  }
+
+  void _showSellDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Angebot als verkauft markieren"),
+            content: Text("Willst du wirklich das Angebot als verkauft markieren?"),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () async {
+                  Navigator.pop(context, true);
+                  await _setSold();
+                },
+              ),
+              TextButton(
+                child: Text("Abbrechen"),
+                onPressed: () => Navigator.pop(context, false),
+              )
+            ],
+          );
+        }
+    );
   }
 
   _removeImage(index) {
@@ -140,7 +243,7 @@ class _EditOffer extends State<EditOffer> {
     _showPrice = _offer.compensationType == "Bar" ? 1 : 0;
 
     if(_offer.price != null)
-      Format.priceFormat.updateValue(_offer.price);
+      priceFormat.updateValue(_offer.price);
 
     setState(() {
       _loading = true;
@@ -247,9 +350,9 @@ class _EditOffer extends State<EditOffer> {
                           icon: Icon(Icons.euro)),
                       autocorrect: false,
                       keyboardType: TextInputType.number,
-                      controller: Format.priceFormat,
-                      validator: (value) => Format.priceFormat.numberValue < 0.01 ? "Preis muss mindestens 0,01€ sein" : null,
-                      onSaved: (value) => _offer.price = Format.priceFormat.numberValue,
+                      controller: priceFormat,
+                      validator: (value) => priceFormat.numberValue < 0.01 ? "Preis muss mindestens 0,01€ sein" : null,
+                      onSaved: (value) => _offer.price = priceFormat.numberValue,
                     ),
                   ),
                 ),
@@ -300,14 +403,14 @@ class _EditOffer extends State<EditOffer> {
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
                   child: ElevatedButton(
-                    onPressed: _setSold,
+                    onPressed: _showSellDialog,
                     child: Text("Als verkauft markieren"),
                   ),
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
                   child: ElevatedButton(
-                    onPressed: _deleteOffer,
+                    onPressed: _showDeleteDialog,
                     child: Text("Angebot löschen"),
                   ),
                 ),

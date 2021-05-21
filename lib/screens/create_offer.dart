@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:frontend_mobile/models/offer.dart';
 import 'package:frontend_mobile/services/offer_service.dart';
-import 'package:frontend_mobile/util/format.dart';
 import 'package:frontend_mobile/util/notification.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -26,6 +26,7 @@ class _CreateOffer extends State<CreateOffer> {
   int _showPrice = 1;
 
   var _categories = <DropdownMenuItem>[];
+  var priceFormat = MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.', rightSymbol: '€');
 
   Future<void> _loadCategories() async {
     List<String> _fetchedCategories = await _offerService.fetchCategories();
@@ -258,9 +259,9 @@ class _CreateOffer extends State<CreateOffer> {
                           icon: Icon(Icons.euro)),
                       autocorrect: false,
                       keyboardType: TextInputType.number,
-                      controller: Format.priceFormat,
-                      validator: (value) => Format.priceFormat.numberValue < 0.01 ? "Preis muss mindestens 0,01€ sein" : null,
-                      onSaved: (value) => _offer.price = Format.priceFormat.numberValue,
+                      controller: priceFormat,
+                      validator: (value) => priceFormat.numberValue < 0.01 ? "Preis muss mindestens 0,01€ sein" : null,
+                      onSaved: (value) => _offer.price = priceFormat.numberValue,
                     ),
                   ),
                 ),

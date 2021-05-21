@@ -40,7 +40,6 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  //TODO Investigate Frame Time warnings
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
 

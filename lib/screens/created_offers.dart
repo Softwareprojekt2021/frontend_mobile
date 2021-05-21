@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/screens/edit_offer.dart';
-import 'package:frontend_mobile/util/format.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 import '../components/side_bar.dart';
@@ -20,6 +20,8 @@ class _CreatedOffers extends State<CreatedOffers> {
 
   List<Offer> _offers;
   bool _loading = false;
+
+  var euro = NumberFormat.currency(symbol: "€", locale: "de_DE");
 
   Future<void> _loadOffers() async {
     await _offerService.fetchCreatedOffers().then((result) {
@@ -73,7 +75,7 @@ class _CreatedOffers extends State<CreatedOffers> {
                 backgroundImage: Image.network(offer.pictures[0]).image,
               ),
             subtitle: offer.compensationType == "Bar"
-                ? Text("Preis: " + Format.euro.format(offer.price))
+                ? Text("Preis: " + euro.format(offer.price))
                 : Text(offer.compensationType),
             trailing: IconButton(
               icon: Icon(Icons.edit, color: Colors.blue),

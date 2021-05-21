@@ -11,6 +11,18 @@ class OfferService {
     return;
   }
 
+  offerSold(int offerId) async {
+
+  }
+
+  deleteOffer(int offerId) async {
+
+  }
+
+  updateOffer(Offer offer) async {
+
+  }
+
   fetchCreatedOffers() async {
     //Mockup
     return [
