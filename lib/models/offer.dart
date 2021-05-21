@@ -28,5 +28,15 @@ class Offer {
     'pictures': pictures
   };
 
-  Offer clone() => Offer(id: id, title: title, description: description, compensationType: compensationType, category: category, price: price, sold: sold, pictures: pictures);
+  Offer clone() => Offer(
+      id: id,
+      title: title,
+      description: description,
+      compensationType: compensationType,
+      category: category,
+      price: price,
+      sold: sold,
+      pictures: pictures != null
+          ? new List<String>.from(pictures)
+          : null);
 }

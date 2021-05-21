@@ -27,6 +27,7 @@ class _EditOffer extends State<EditOffer> {
   final _offerService = OfferService();
   final priceFormat = new MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.', rightSymbol: '€');
 
+  Offer _offer;
   bool _loading = false;
   int _showPrice;
 
@@ -56,18 +57,18 @@ class _EditOffer extends State<EditOffer> {
 
     if (pickedFile != null) {
       setState(() {
-        if (widget.offer.pictures == null) {
-          widget.offer.pictures = [];
+        if (_offer.pictures == null) {
+          _offer.pictures = [];
         }
 
-        widget.offer.pictures.add(File(pickedFile.path).path);
+        _offer.pictures.add(File(pickedFile.path).path);
       });
     }
   }
 
   _removeImage(index) {
     setState(() {
-      widget.offer.pictures.removeAt(index);
+      _offer.pictures.removeAt(index);
     });
   }
 
@@ -76,7 +77,7 @@ class _EditOffer extends State<EditOffer> {
       padding:
       EdgeInsets.only(top: 5, bottom: 5, left: 50, right: 60),
       child: GridView.builder(
-        itemCount: widget.offer.pictures == null ? 1 : widget.offer.pictures.length + 1,
+        itemCount: _offer.pictures == null ? 1 : _offer.pictures.length + 1,
         shrinkWrap: true,
         physics: ClampingScrollPhysics(),
         gridDelegate:
@@ -85,7 +86,7 @@ class _EditOffer extends State<EditOffer> {
             crossAxisSpacing: 4.0,
             mainAxisSpacing: 4.0),
         itemBuilder: (BuildContext context, int index) {
-          if (index == (widget.offer.pictures == null ? 0 : widget.offer.pictures.length)) {
+          if (index == (_offer.pictures == null ? 0 : _offer.pictures.length)) {
             return Stack(
               children: [
                 Positioned.fill(
@@ -106,12 +107,12 @@ class _EditOffer extends State<EditOffer> {
                 Positioned.fill(
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(5),
-                      child: widget.offer.pictures[index].substring(0, 4) == "http"
+                      child: _offer.pictures[index].substring(0, 4) == "http"
                           ? Image.network(
-                          widget.offer.pictures[index],
+                          _offer.pictures[index],
                           fit: BoxFit.cover)
                           : Image.file(
-                          File(widget.offer.pictures[index]),
+                          File(_offer.pictures[index]),
                           fit: BoxFit.cover)),
                 ),
                 Align(
@@ -135,10 +136,12 @@ class _EditOffer extends State<EditOffer> {
   initState() {
     super.initState();
 
-    _showPrice = widget.offer.compensationType == "Bar" ? 1 : 0;
+    //Clone Object because Flutter would instead call by Reference
+    _offer = widget.offer.clone();
+    _showPrice = _offer.compensationType == "Bar" ? 1 : 0;
 
-    if(widget.offer.price != null)
-      priceFormat.updateValue(widget.offer.price);
+    if(_offer.price != null)
+      priceFormat.updateValue(_offer.price);
 
     setState(() {
       _loading = true;
@@ -177,10 +180,10 @@ class _EditOffer extends State<EditOffer> {
                       labelText: "Titel",
                       icon: Icon(Icons.title),
                     ),
-                    initialValue: widget.offer.title,
+                    initialValue: _offer.title,
                     autocorrect: false,
                     validator: (value) => value.isEmpty ? "Titel darf nicht leer sein" : null,
-                    onSaved: (value) => widget.offer.title = value,
+                    onSaved: (value) => _offer.title = value,
                   ),
                 ),
                 Padding(
@@ -210,7 +213,7 @@ class _EditOffer extends State<EditOffer> {
                       value: 1,
                       onChanged: (value) {
                         setState(() {
-                          widget.offer.compensationType = "Bar";
+                          _offer.compensationType = "Bar";
                           _showPrice = value;
                         });
                       },
@@ -226,9 +229,9 @@ class _EditOffer extends State<EditOffer> {
                       value: 0,
                       onChanged: (value) {
                         setState(() {
-                          widget.offer.compensationType = "Tausch";
+                          _offer.compensationType = "Tausch";
                           _showPrice = value;
-                          widget.offer.price = null;
+                          _offer.price = null;
                         });
                       },
                       groupValue: _showPrice,
@@ -247,7 +250,7 @@ class _EditOffer extends State<EditOffer> {
                       keyboardType: TextInputType.number,
                       controller: priceFormat,
                       validator: (value) => priceFormat.numberValue < 0.01 ? "Preis muss mindestens 0,01€ sein" : null,
-                      onSaved: (value) => widget.offer.price = priceFormat.numberValue,
+                      onSaved: (value) => _offer.price = priceFormat.numberValue,
                     ),
                   ),
                 ),
@@ -262,11 +265,11 @@ class _EditOffer extends State<EditOffer> {
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
                     autocorrect: false,
-                    initialValue: widget.offer.description,
+                    initialValue: _offer.description,
                     validator: (value) => value.isEmpty
                         ? "Beschreibung darf nicht leer sein"
                         : null,
-                    onSaved: (value) => widget.offer.description = value,
+                    onSaved: (value) => _offer.description = value,
                   ),
                 ),
                 Padding(
@@ -277,14 +280,14 @@ class _EditOffer extends State<EditOffer> {
                         icon: Icon(Icons.category),
                       ),
                       items: _categories,
-                      value: widget.offer.category,
+                      value: _offer.category,
                       hint: Text("Kategorie"),
                       validator: (value) => value == null
                           ? "Kategorie darf nicht leer sein"
                           : null,
                       onChanged: (value) {
                         setState(() {
-                          widget.offer.category = value;
+                          _offer.category = value;
                         });
                       }),
                 ),
