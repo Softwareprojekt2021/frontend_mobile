@@ -3,7 +3,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:frontend_mobile/util/format.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -25,7 +25,6 @@ class _EditOffer extends State<EditOffer> {
   final formKey = GlobalKey<FormState>();
   final picker = ImagePicker();
   final _offerService = OfferService();
-  final priceFormat = new MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.', rightSymbol: '€');
 
   Offer _offer;
   bool _loading = false;
@@ -141,7 +140,7 @@ class _EditOffer extends State<EditOffer> {
     _showPrice = _offer.compensationType == "Bar" ? 1 : 0;
 
     if(_offer.price != null)
-      priceFormat.updateValue(_offer.price);
+      Format.priceFormat.updateValue(_offer.price);
 
     setState(() {
       _loading = true;
@@ -248,9 +247,9 @@ class _EditOffer extends State<EditOffer> {
                           icon: Icon(Icons.euro)),
                       autocorrect: false,
                       keyboardType: TextInputType.number,
-                      controller: priceFormat,
-                      validator: (value) => priceFormat.numberValue < 0.01 ? "Preis muss mindestens 0,01€ sein" : null,
-                      onSaved: (value) => _offer.price = priceFormat.numberValue,
+                      controller: Format.priceFormat,
+                      validator: (value) => Format.priceFormat.numberValue < 0.01 ? "Preis muss mindestens 0,01€ sein" : null,
+                      onSaved: (value) => _offer.price = Format.priceFormat.numberValue,
                     ),
                   ),
                 ),

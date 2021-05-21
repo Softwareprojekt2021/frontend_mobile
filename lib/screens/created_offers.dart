@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/screens/edit_offer.dart';
-import 'package:intl/intl.dart';
+import 'package:frontend_mobile/util/format.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 import '../components/side_bar.dart';
@@ -58,8 +58,6 @@ class _CreatedOffers extends State<CreatedOffers> {
   }
 
   Widget _createOfferCard(Offer offer, int index) {
-    var euro = new NumberFormat.currency(symbol: "€", locale: "de_DE");
-
     return Card(
       child: Column(
         children: [
@@ -74,7 +72,9 @@ class _CreatedOffers extends State<CreatedOffers> {
               : CircleAvatar(
                 backgroundImage: Image.network(offer.pictures[0]).image,
               ),
-            subtitle: offer.compensationType == "Bar" ? Text("Preis: " + euro.format(offer.price)) : Text(offer.compensationType),
+            subtitle: offer.compensationType == "Bar"
+                ? Text("Preis: " + Format.euro.format(offer.price))
+                : Text(offer.compensationType),
             trailing: IconButton(
               icon: Icon(Icons.edit, color: Colors.blue),
               onPressed: () {

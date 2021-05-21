@@ -30,13 +30,14 @@ class _ProfileState extends State<Profile> {
   User _user = StoreService.store.state.user.clone();
   var _universities = <DropdownMenuItem>[];
 
-  //TODO Get Data from Backend
-  _loadUniversities() {
-    setState(() {
-      _universities.add(DropdownMenuItem(child: Text("FH Bielefeld"), value: "FH Bielefeld"));
-      _universities.add(DropdownMenuItem(child: Text("FH Bielefeld (Minden)"), value: "FH Bielefeld (Minden)"));
-      _universities.add(DropdownMenuItem(child: Text("Uni Bielefeld"), value: "Uni Bielefeld"));
-    });
+  Future <void> _loadUniversities() async {
+    List<String> _fetchedUniversities = await _userService.fetchUniversities();
+
+    for (String university in _fetchedUniversities) {
+      setState(() {
+        _universities.add(DropdownMenuItem(child: Text(university), value: university));
+      });
+    }
   }
 
   //TODO Investigate Frame Time warnings
