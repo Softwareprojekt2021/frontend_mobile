@@ -3,4 +3,5 @@ class AppUrl {
 
   static const String login = baseURL + "/login";
   static const String user = baseURL + "/user";
+  static const String offer = baseURL + "/offer";
 }

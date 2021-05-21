@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/services/store_service.dart';
-import 'package:frontend_mobile/util/avatar.dart';
+import 'package:frontend_mobile/components/avatar.dart';
 import 'package:frontend_mobile/util/notification.dart';
 
 class SideBar extends StatefulWidget {
@@ -11,10 +11,6 @@ class SideBar extends StatefulWidget {
 }
 
 class _SideBarState extends State<SideBar> {
-  //TODO Debug
-  final String fName = "Max";
-  final String lName = "Mustermann";
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -35,15 +31,13 @@ class _SideBarState extends State<SideBar> {
               Navigator.pop(context);
               Navigator.pushNamed(context, "/register");
             },
-          ),
+          )
         ],
       ) : ListView(
         children: [
           UserAccountsDrawerHeader(
-            //TODO If Backend has been implemented
             accountEmail: Text(StoreService.store.state.user.email),
-            //accountName: Text(StoreService.store.state.user.firstName + " " + StoreService.store.state.user.lastName),
-            accountName: Text(fName + " " + lName),
+            accountName: Text(StoreService.store.state.user.firstName + " " + StoreService.store.state.user.lastName),
             currentAccountPicture: setupAvatar(StoreService.store.state.user, 20)
           ),
           ListTile(
@@ -52,6 +46,14 @@ class _SideBarState extends State<SideBar> {
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, "/home");
+            },
+          ),
+          ListTile(
+            title: Text("Meine Angebote"),
+            trailing: Icon(Icons.local_offer),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, "/createdOffers");
             },
           ),
           ListTile(

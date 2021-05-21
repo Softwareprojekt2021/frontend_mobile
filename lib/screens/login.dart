@@ -87,6 +87,8 @@ class _LoginState extends State<Login> {
   Future<void> onPressed() async {
     var form = formKey.currentState;
 
+    FocusScope.of(context).unfocus();
+
     if (form.validate()) {
       form.save();
       setState(() {
@@ -94,20 +96,11 @@ class _LoginState extends State<Login> {
       });
 
       try {
-        //TODO Remove if Backend is working
-        if (_email == "test@test.de" && _password == "12345678") {
-          //DEBUG
-          User debugUser = new User(id: 0, email: "test@test.de", firstName: "Max", lastName: "Mustermann", course: "Informatik", university: "FH Bielefeld (Minden)", admin: 0, profilePicture: "https://ih1.redbubble.net/image.450287996.4220/flat,1000x1000,075,f.u1.jpg");
+        String token = await _loginService.login(_email, _password);
+        StoreService.store.dispatch(SetTokenAction(token));
 
-          StoreService.store.dispatch(SetUserAction(debugUser));
-          StoreService.store.dispatch(SetTokenAction("aaaaaaaaaaaaaaaaaaaaaaaaaa"));
-        } else {
-          String token = await _loginService.login(_email, _password);
-          StoreService.store.dispatch(SetTokenAction(token));
-
-          User user = await _userService.fetchUser();
-          StoreService.store.dispatch(SetUserAction(user));
-        }
+        User user = await _userService.fetchUser();
+        StoreService.store.dispatch(SetUserAction(user));
 
         setState(() {
           _saving = false;

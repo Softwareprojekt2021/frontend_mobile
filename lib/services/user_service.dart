@@ -5,9 +5,22 @@ import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/util/app_url.dart';
 import 'package:http/http.dart';
 
+//TODO Backend
 class UserService {
 
   fetchUser() async {
+    //Mockup
+    if(StoreService.store.state.token == "aaaaaaaaaaaaaaaaaaaaaaaaaa")
+      return new User(
+          id: 0,
+          email: "test@test.de",
+          firstName: "Max",
+          lastName: "Mustermann",
+          course: "Informatik",
+          university: "FH Bielefeld (Minden)",
+          admin: 0,
+          profilePicture: "https://ih1.redbubble.net/image.450287996.4220/flat,1000x1000,075,f.u1.jpg");
+
     try {
       Response response = await get(
         Uri.parse(AppUrl.user),
@@ -63,5 +76,10 @@ class UserService {
     } on TimeoutException {
       throw("Server ist nicht erreichbar");
     }
+  }
+
+  fetchUniversities() async {
+    //Mockup
+    return ["FH Bielefeld", "FH Bielefeld (Minden)", "Uni Bielefeld"];
   }
 }

@@ -7,7 +7,7 @@ import 'package:frontend_mobile/components/side_bar.dart';
 import 'package:frontend_mobile/models/user.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/services/user_service.dart';
-import 'package:frontend_mobile/util/avatar.dart';
+import 'package:frontend_mobile/components/avatar.dart';
 import 'package:frontend_mobile/util/notification.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -30,16 +30,16 @@ class _ProfileState extends State<Profile> {
   User _user = StoreService.store.state.user.clone();
   var _universities = <DropdownMenuItem>[];
 
-  //TODO Get Data from Backend
-  _loadUniversities() {
-    setState(() {
-      _universities.add(DropdownMenuItem(child: Text("FH Bielefeld"), value: "FH Bielefeld"));
-      _universities.add(DropdownMenuItem(child: Text("FH Bielefeld (Minden)"), value: "FH Bielefeld (Minden)"));
-      _universities.add(DropdownMenuItem(child: Text("Uni Bielefeld"), value: "Uni Bielefeld"));
-    });
+  Future <void> _loadUniversities() async {
+    List<String> _fetchedUniversities = await _userService.fetchUniversities();
+
+    for (String university in _fetchedUniversities) {
+      setState(() {
+        _universities.add(DropdownMenuItem(child: Text(university), value: university));
+      });
+    }
   }
 
-  //TODO Investigate Frame Time warnings
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
@@ -77,6 +77,8 @@ class _ProfileState extends State<Profile> {
 
   Future<void> save() async {
     var form = formKey.currentState;
+
+    FocusScope.of(context).unfocus();
 
     if (form.validate()) {
       form.save();
