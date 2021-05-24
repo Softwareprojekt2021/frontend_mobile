@@ -4,7 +4,6 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/models/user.dart';
 import 'package:frontend_mobile/services/http_service.dart';
-import 'package:frontend_mobile/services/http_service.dart';
 import 'package:frontend_mobile/services/login_service.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/services/user_service.dart';
