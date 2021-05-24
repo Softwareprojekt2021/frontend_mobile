@@ -7,18 +7,18 @@ class User {
 
   User.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        email = json['email'],
+        email = json['e_mail'],
         password = json['password'],
         firstName = json['first_name'],
         lastName = json['last_name'],
         course = json['course'],
         profilePicture = json['profile_picture'],
-        university = json['university.university'],
+        university = json['university'],
         admin = json['admin'];
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'email': email,
+    'e_mail': email,
     'password': password,
     'first_name': firstName,
     'last_name': lastName,

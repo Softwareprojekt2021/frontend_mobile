@@ -3,12 +3,8 @@ import 'dart:convert';
 import 'package:frontend_mobile/util/app_url.dart';
 import 'package:http/http.dart';
 
-//TODO Backend
 class LoginService {
   Future<String> login(String email, String password) async {
-    //Mockup
-    if (email == "test@test.de" && password == "12345678")
-      return "aaaaaaaaaaaaaaaaaaaaaaaaaa";
 
     final Map<String, dynamic> loginData = {
       'email': email,
