@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -27,6 +28,8 @@ class _CreateOffer extends State<CreateOffer> {
 
   var _categories = <DropdownMenuItem>[];
   var priceFormat = MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.', rightSymbol: '€');
+  var _textControllerTitle = TextEditingController();
+  var _textControllerDescription = TextEditingController();
 
   Future<void> _loadCategories() async {
     List<String> _fetchedCategories = await _offerService.fetchCategories();
@@ -49,6 +52,16 @@ class _CreateOffer extends State<CreateOffer> {
 
       setState(() {
         _loading = true;
+
+        if(_showPrice == 1) {
+          _offer.compensationType = "Bar";
+        } else {
+          _offer.compensationType = "Tausch";
+        }
+
+        _offer.price = priceFormat.numberValue;
+        _offer.title = _textControllerTitle.text;
+        _offer.description = _textControllerDescription.text;
       });
 
       try {
@@ -79,7 +92,8 @@ class _CreateOffer extends State<CreateOffer> {
           _offer.pictures = [];
         }
 
-        _offer.pictures.add(File(pickedFile.path).path);
+        final bytes = File(pickedFile.path).readAsBytesSync();
+        _offer.pictures.add(base64Encode(bytes));
       });
     }
   }
@@ -145,12 +159,8 @@ class _CreateOffer extends State<CreateOffer> {
                 Positioned.fill(
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(5),
-                      child: _offer.pictures[index].substring(0, 4) == "http"
-                          ? Image.network(
-                          _offer.pictures[index],
-                          fit: BoxFit.cover)
-                          : Image.file(
-                          File(_offer.pictures[index]),
+                      child: Image.memory(
+                          Base64Codec().decode(_offer.pictures[index]),
                           fit: BoxFit.cover)),
                 ),
                 Align(
@@ -192,9 +202,9 @@ class _CreateOffer extends State<CreateOffer> {
                       icon: Icon(Icons.title),
                     ),
                     autocorrect: false,
+                    controller: _textControllerTitle,
                     validator: (value) =>
-                    value.isEmpty ? "Titel darf nicht leer sein" : null,
-                    onSaved: (value) => _offer.title = value,
+                      value.isEmpty ? "Titel darf nicht leer sein" : null,
                   ),
                 ),
                 Padding(
@@ -224,7 +234,6 @@ class _CreateOffer extends State<CreateOffer> {
                       value: 1,
                       onChanged: (value) {
                         setState(() {
-                          _offer.compensationType = "Bar";
                           _showPrice = value;
                         });
                       },
@@ -240,7 +249,6 @@ class _CreateOffer extends State<CreateOffer> {
                       value: 0,
                       onChanged: (value) {
                         setState(() {
-                          _offer.compensationType = "Tausch";
                           _showPrice = value;
                           _offer.price = null;
                         });
@@ -261,7 +269,6 @@ class _CreateOffer extends State<CreateOffer> {
                       keyboardType: TextInputType.number,
                       controller: priceFormat,
                       validator: (value) => priceFormat.numberValue < 0.01 ? "Preis muss mindestens 0,01€ sein" : null,
-                      onSaved: (value) => _offer.price = priceFormat.numberValue,
                     ),
                   ),
                 ),
@@ -276,16 +283,17 @@ class _CreateOffer extends State<CreateOffer> {
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
                     autocorrect: false,
+                    controller: _textControllerDescription,
                     validator: (value) => value.isEmpty
                         ? "Beschreibung darf nicht leer sein"
                         : null,
-                    onSaved: (value) => _offer.description = value,
                   ),
                 ),
                 Padding(
                   padding:
                       EdgeInsets.only(top: 5, bottom: 5, left: 50, right: 60),
                   child: DropdownButtonFormField(
+                      value: _offer.category,
                       decoration: InputDecoration(
                         icon: Icon(Icons.category),
                       ),

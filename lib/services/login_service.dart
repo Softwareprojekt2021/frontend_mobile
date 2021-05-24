@@ -1,36 +1,28 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'package:frontend_mobile/services/http_service.dart';
 import 'package:frontend_mobile/util/app_url.dart';
-import 'package:http/http.dart';
 
-//TODO Backend
 class LoginService {
   Future<String> login(String email, String password) async {
-    //Mockup
-    if (email == "test@test.de" && password == "12345678")
-      return "aaaaaaaaaaaaaaaaaaaaaaaaaa";
-
     final Map<String, dynamic> loginData = {
       'email': email,
       'password': password
     };
 
     try {
-      Response response = await post(
-        Uri.parse(AppUrl.login),
-        body: json.encode(loginData),
-        headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 10));
+      final response = await HttpService.client.post(AppUrl.login, data: json.encode(loginData));
 
-      if(response.statusCode == 404) {
+      return response.data;
+    } on DioError catch (error) {
+      if(error.type == DioErrorType.connectTimeout) {
+        throw("Server ist nicht erreichbar");
+      } else if(error.response.statusCode == 404) {
         throw("Anmeldeinformationen sind falsch");
-      } else if (response.statusCode != 200) {
-        throw(response.body);
+      } else {
+        throw(error);
       }
-
-      return response.body;
-    } on TimeoutException {
-      throw("Server ist nicht erreichbar");
     }
   }
 }

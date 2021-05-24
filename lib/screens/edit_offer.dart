@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -30,6 +31,8 @@ class _EditOffer extends State<EditOffer> {
 
   var _categories = <DropdownMenuItem>[];
   var priceFormat = MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.', rightSymbol: '€');
+  var _textControllerTitle = TextEditingController();
+  var _textControllerDescription = TextEditingController();
 
   Future<void> _loadCategories() async {
     List<String> _fetchedCategories = await _offerService.fetchCategories();
@@ -47,6 +50,17 @@ class _EditOffer extends State<EditOffer> {
     try {
       setState(() {
         _loading = true;
+
+        if(_showPrice == 1) {
+          _offer.compensationType = "Bar";
+          _offer.price = priceFormat.numberValue;
+        } else {
+          _offer.compensationType = "Tausch";
+          _offer.price = null;
+        }
+
+        _offer.title = _textControllerTitle.text;
+        _offer.description = _textControllerDescription.text;
       });
 
       await _offerService.updateOffer(_offer);
@@ -113,7 +127,8 @@ class _EditOffer extends State<EditOffer> {
           _offer.pictures = [];
         }
 
-        _offer.pictures.add(File(pickedFile.path).path);
+        final bytes = File(pickedFile.path).readAsBytesSync();
+        _offer.pictures.add(base64Encode(bytes));
       });
     }
   }
@@ -209,12 +224,8 @@ class _EditOffer extends State<EditOffer> {
                 Positioned.fill(
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(5),
-                      child: _offer.pictures[index].substring(0, 4) == "http"
-                          ? Image.network(
-                          _offer.pictures[index],
-                          fit: BoxFit.cover)
-                          : Image.file(
-                          File(_offer.pictures[index]),
+                      child: Image.memory(
+                          Base64Codec().decode(_offer.pictures[index]),
                           fit: BoxFit.cover)),
                 ),
                 Align(
@@ -244,6 +255,8 @@ class _EditOffer extends State<EditOffer> {
 
     if(_offer.price != null)
       priceFormat.updateValue(_offer.price);
+      _textControllerTitle.text = _offer.title;
+      _textControllerDescription.text = _offer.description;
 
     setState(() {
       _loading = true;
@@ -282,10 +295,9 @@ class _EditOffer extends State<EditOffer> {
                       labelText: "Titel",
                       icon: Icon(Icons.title),
                     ),
-                    initialValue: _offer.title,
+                    controller: _textControllerTitle,
                     autocorrect: false,
                     validator: (value) => value.isEmpty ? "Titel darf nicht leer sein" : null,
-                    onSaved: (value) => _offer.title = value,
                   ),
                 ),
                 Padding(
@@ -315,7 +327,6 @@ class _EditOffer extends State<EditOffer> {
                       value: 1,
                       onChanged: (value) {
                         setState(() {
-                          _offer.compensationType = "Bar";
                           _showPrice = value;
                         });
                       },
@@ -331,7 +342,6 @@ class _EditOffer extends State<EditOffer> {
                       value: 0,
                       onChanged: (value) {
                         setState(() {
-                          _offer.compensationType = "Tausch";
                           _showPrice = value;
                           _offer.price = null;
                         });
@@ -367,11 +377,10 @@ class _EditOffer extends State<EditOffer> {
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
                     autocorrect: false,
-                    initialValue: _offer.description,
+                    controller: _textControllerDescription,
                     validator: (value) => value.isEmpty
                         ? "Beschreibung darf nicht leer sein"
                         : null,
-                    onSaved: (value) => _offer.description = value,
                   ),
                 ),
                 Padding(

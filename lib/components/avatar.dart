@@ -1,4 +1,5 @@
-import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/models/user.dart';
@@ -15,18 +16,12 @@ Widget setupAvatar(User user, double radius) {
         )
     );
   } else {
-    Image image;
-
-    if(user.profilePicture.substring(0, 4) == "http") {
-      image = Image.network(user.profilePicture);
-    } else {
-      image = Image.file(File(user.profilePicture));
-    }
+    Uint8List bytes = Base64Codec().decode(user.profilePicture);
 
     return CircleAvatar(
         backgroundColor: Colors.grey,
         radius: radius,
-        backgroundImage: image.image,
+        backgroundImage: Image.memory(bytes).image,
     );
   }
 }

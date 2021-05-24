@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/models/user.dart';
+import 'package:frontend_mobile/services/http_service.dart';
 import 'package:frontend_mobile/services/login_service.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/services/user_service.dart';
@@ -98,8 +101,10 @@ class _LoginState extends State<Login> {
       try {
         String token = await _loginService.login(_email, _password);
         StoreService.store.dispatch(SetTokenAction(token));
+        HttpService.setupAuthHeader();
 
         User user = await _userService.fetchUser();
+
         StoreService.store.dispatch(SetUserAction(user));
 
         setState(() {
@@ -113,6 +118,7 @@ class _LoginState extends State<Login> {
           _saving = false;
         });
 
+        log(error.toString());
         NotificationOverlay.error(error.toString());
       }
     }

@@ -1,6 +1,6 @@
-//TODO Check json fields if login backend has been implemented
 class Offer {
-  int id, sold;
+  int id;
+  bool sold;
   double price;
   String title, compensationType, description, category;
   List<String> pictures;
@@ -8,14 +8,14 @@ class Offer {
   Offer({this.id, this.title, this.description, this.compensationType, this.category, this.price, this.sold, this.pictures});
 
   Offer.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
+      : id = int.parse(json['id']),
         title = json['title'],
-        description = json['decscription'],
+        description = json['description'],
         compensationType = json['compensation_type'],
         category = json['category'],
-        price = json['price'],
+        price = json['price'] == "None" ? null : double.parse(json['price']),
         sold = json['sold'],
-        pictures = json['pictures'];
+        pictures = List<String>.from(json['pictures']);
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -24,7 +24,7 @@ class Offer {
     'compensation_type': compensationType,
     'category': category,
     'price': price,
-    'sold': sold,
+    'sold': sold == true ? 1 : 0,
     'pictures': pictures
   };
 

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/screens/edit_offer.dart';
 import 'package:intl/intl.dart';
@@ -72,7 +74,8 @@ class _CreatedOffers extends State<CreatedOffers> {
                 )
               )
               : CircleAvatar(
-                backgroundImage: Image.network(offer.pictures[0]).image,
+                backgroundImage: Image.memory(
+                    Base64Codec().decode(offer.pictures[0])).image,
               ),
             subtitle: offer.compensationType == "Bar"
                 ? Text("Preis: " + euro.format(offer.price))
