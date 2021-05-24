@@ -5,6 +5,7 @@ import 'package:frontend_mobile/util/app_url.dart';
 
 
 class OfferService {
+  //TODO
   fetchCategories() async {
     //Mockup
     return ["Elektronik", "Computer", "Buch", "Sonstiges"];
@@ -18,7 +19,6 @@ class OfferService {
       if(error.type == DioErrorType.connectTimeout) {
         throw("Server ist nicht erreichbar");
       } else {
-        print(error);
         throw(error);
       }
     }
@@ -44,7 +44,6 @@ class OfferService {
       if(error.type == DioErrorType.connectTimeout) {
         throw("Server ist nicht erreichbar");
       } else {
-        print(error);
         throw(error);
       }
     }
@@ -62,6 +61,7 @@ class OfferService {
     }
   }
 
+  //TODO
   fetchCreatedOffers() async {
     try {
       final response = await HttpService.client.get(AppUrl.offer + "/3");

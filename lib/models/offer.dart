@@ -13,7 +13,7 @@ class Offer {
         description = json['description'],
         compensationType = json['compensation_type'],
         category = json['category'],
-        price = double.parse(json['price']),
+        price = json['price'] == "None" ? null : double.parse(json['price']),
         sold = json['sold'],
         pictures = List<String>.from(json['pictures']);
 
