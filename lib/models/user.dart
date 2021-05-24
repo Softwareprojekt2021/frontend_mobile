@@ -1,4 +1,3 @@
-//TODO Check json fields if login backend has been implemented
 class User {
   int id;
   bool admin;
@@ -20,13 +19,13 @@ class User {
   Map<String, dynamic> toJson() => {
     'id': id,
     'e_mail': email,
-    'password': password,
+    if(password.isNotEmpty) 'password': password,
     'first_name': firstName,
     'last_name': lastName,
     'course': course,
     'profile_picture': profilePicture,
     'university': university,
-    'admin': admin
+    'admin': admin == true ? 1 : 0
   };
 
   User clone() => User(id: id, email: email, password: password, firstName: firstName, lastName: lastName, course: course, profilePicture: profilePicture, university: university, admin: admin);

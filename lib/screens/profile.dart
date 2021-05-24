@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:email_validator/email_validator.dart';
@@ -8,6 +9,7 @@ import 'package:frontend_mobile/models/user.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/services/user_service.dart';
 import 'package:frontend_mobile/components/avatar.dart';
+import 'package:frontend_mobile/stores/user_action.dart';
 import 'package:frontend_mobile/util/notification.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -45,7 +47,8 @@ class _ProfileState extends State<Profile> {
 
     setState(() {
       if (pickedFile != null) {
-        _user.profilePicture = File(pickedFile.path).path;
+        final bytes = File(pickedFile.path).readAsBytesSync();
+        _user.profilePicture = base64Encode(bytes);
       }
     });
   }
@@ -86,11 +89,22 @@ class _ProfileState extends State<Profile> {
       setState(() {
         _saving = true;
       });
+
+      try {
+        await _userService.updateUser(_user);
+
+        await StoreService.store.dispatch(SetUserAction(_user));
+
+        NotificationOverlay.success("Profil wurde aktualisiert");
+      } catch (error) {
+        NotificationOverlay.error(error.toString());
+      } finally {
+        setState(() {
+          _saving = false;
+        });
+      }
     }
 
-    setState(() {
-      _saving = false;
-    });
   }
 
   Future<void> delete() async {

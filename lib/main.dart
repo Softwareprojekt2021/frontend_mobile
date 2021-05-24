@@ -8,6 +8,7 @@ import 'package:frontend_mobile/screens/home.dart';
 import 'package:frontend_mobile/screens/login.dart';
 import 'package:frontend_mobile/screens/profile.dart';
 import 'package:frontend_mobile/screens/register.dart';
+import 'package:frontend_mobile/services/http_service.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/stores/global_state.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -15,6 +16,7 @@ import 'package:redux/redux.dart';
 
 void main() async {
   StoreService.setupStore();
+  HttpService.setup();
 
   runApp(MyApp(store: StoreService.store));
 }
