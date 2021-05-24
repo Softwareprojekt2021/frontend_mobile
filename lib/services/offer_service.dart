@@ -5,10 +5,18 @@ import 'package:frontend_mobile/util/app_url.dart';
 
 
 class OfferService {
-  //TODO
   fetchCategories() async {
-    //Mockup
-    return ["Elektronik", "Computer", "Buch", "Sonstiges"];
+    try {
+      final response = await HttpService.client.get(AppUrl.categories);
+
+      return List<String>.from(response.data);
+    } on DioError catch (error) {
+      if(error.type == DioErrorType.connectTimeout) {
+        throw("Server ist nicht erreichbar");
+      } else {
+        throw(error);
+      }
+    }
   }
 
   createOffer(Offer offer) async {
@@ -61,16 +69,11 @@ class OfferService {
     }
   }
 
-  //TODO
   fetchCreatedOffers() async {
     try {
-      final response = await HttpService.client.get(AppUrl.offer + "/3");
+      final response = await HttpService.client.get(AppUrl.offers);
 
-      List<Offer> offers = [];
-
-      offers.add(Offer.fromJson(response.data));
-
-      return offers;
+      return response.data.map((offer) => Offer.fromJson(offer)).toList().cast<Offer>();
     } on DioError catch (error) {
       if(error.type == DioErrorType.connectTimeout) {
         throw("Server ist nicht erreichbar");
