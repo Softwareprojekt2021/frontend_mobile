@@ -58,7 +58,7 @@ class _CreatedOffers extends State<CreatedOffers> {
           centerTitle: true,
         ),
         body:
-          _offers == null ? ListTile(
+          _offers == null || _offers.length == 0 ? ListTile(
               title: Text("Keine Angebote gefunden", style: TextStyle(fontSize: 20)),
               subtitle: Text("Klicke unten auf das Plus Zeichen, um eins zu erstellen."),
               leading: Icon(Icons.cancel)
@@ -66,12 +66,12 @@ class _CreatedOffers extends State<CreatedOffers> {
           : ListView.builder(
             itemCount: _offers.length,
             itemBuilder: (context, index) {
-              return createOfferCard(context, _offers[index], index);
+              return createEditOfferCard(context, _offers[index]);
             }
           ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => Navigator.pushNamed(context, "/createOffer"),
-          tooltip: 'Increment Counter',
+          tooltip: 'Angebot erstellen',
           child: const Icon(Icons.add),
         ),
       )

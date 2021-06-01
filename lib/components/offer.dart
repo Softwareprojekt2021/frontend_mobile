@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 
 var euro = NumberFormat.currency(symbol: "€", locale: "de_DE");
 
-Widget createOfferCard(BuildContext context, Offer offer, int index) {
+Widget createEditOfferCard(BuildContext context, Offer offer) {
   return Card(
       child: Column(
         children: [
@@ -39,6 +39,36 @@ Widget createOfferCard(BuildContext context, Offer offer, int index) {
               },
             ),
           ),
+        ],
+      )
+  );
+}
+
+Widget createOfferCard(BuildContext context, Offer offer) {
+  return Card(
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(offer.title, style: TextStyle(fontSize: 20)),
+            subtitle: offer.compensationType == "Bar"
+                ? Text("Preis: " + euro.format(offer.price), style: TextStyle(fontSize: 16))
+                : Text(offer.compensationType, style: TextStyle(fontSize: 16)),
+            leading: Icon(Icons.local_offer),
+            trailing: IconButton(
+              icon: Icon(Icons.arrow_forward, color: Colors.blue),
+              onPressed: () {
+                /*
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => EditOffer(offer: offer)
+                    )
+                );
+                 */
+              },
+            ),
+          ),
+          Image.memory(Base64Codec().decode(offer.pictures[0])),
         ],
       )
   );
