@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/models/offer.dart';
 import 'package:frontend_mobile/screens/edit_offer.dart';
+import 'package:frontend_mobile/screens/view_offer.dart';
 import 'package:intl/intl.dart';
 
 var euro = NumberFormat.currency(symbol: "€", locale: "de_DE");
@@ -57,14 +58,12 @@ Widget createOfferCard(BuildContext context, Offer offer) {
             trailing: IconButton(
               icon: Icon(Icons.arrow_forward, color: Colors.blue),
               onPressed: () {
-                /*
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => EditOffer(offer: offer)
+                        builder: (context) => ViewOffer(offer: offer)
                     )
                 );
-                 */
               },
             ),
           ),

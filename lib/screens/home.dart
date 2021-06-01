@@ -20,7 +20,7 @@ class _HomeState extends State<Home> {
   bool _loading = false;
 
   Future<void> _loadOffers() async {
-    await _offerService.fetchCreatedOffers().then((result) {
+    await _offerService.fetchRecommendedOffers().then((result) {
       setState(() {
         _offers = result;
       });
@@ -64,8 +64,22 @@ class _HomeState extends State<Home> {
           ),
           body: Center(
             child: ListView.builder(
-                itemCount: _offers == null ? 0 : _offers.length,
+                itemCount: _offers == null ? 1 : _offers.length + 1,
                 itemBuilder: (context, index) {
+                  if(index == 0) {
+                    return Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            'Empfohlene Angebote',
+                            style: TextStyle(fontSize: 25),
+                          ),
+                        ),
+                    );
+                  }
+                  index -= 1;
+
                   return createOfferCard(context, _offers[index]);
                 }
             ),
