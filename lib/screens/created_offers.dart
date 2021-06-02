@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:frontend_mobile/screens/edit_offer.dart';
-import 'package:intl/intl.dart';
+import 'package:frontend_mobile/components/offer.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 import '../components/side_bar.dart';
@@ -23,23 +20,12 @@ class _CreatedOffers extends State<CreatedOffers> {
   List<Offer> _offers;
   bool _loading = false;
 
-  var euro = NumberFormat.currency(symbol: "€", locale: "de_DE");
-
   Future<void> _loadOffers() async {
     await _offerService.fetchCreatedOffers().then((result) {
       setState(() {
         _offers = result;
       });
     });
-  }
-
-  _editOffer(int index) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditOffer(offer: _offers[index])
-      )
-    );
   }
 
   @override
@@ -61,37 +47,6 @@ class _CreatedOffers extends State<CreatedOffers> {
     }
   }
 
-  Widget _createOfferCard(Offer offer, int index) {
-    return Card(
-      child: Column(
-        children: [
-          ListTile(
-            title: Text(offer.title),
-            leading: offer.pictures == null
-              ? CircleAvatar(
-                child: Icon(
-                  Icons.image
-                )
-              )
-              : CircleAvatar(
-                backgroundImage: Image.memory(
-                    Base64Codec().decode(offer.pictures[0])).image,
-              ),
-            subtitle: offer.compensationType == "Bar"
-                ? Text("Preis: " + euro.format(offer.price))
-                : Text(offer.compensationType),
-            trailing: IconButton(
-              icon: Icon(Icons.edit, color: Colors.blue),
-              onPressed: () {
-                _editOffer(index);
-              },
-            ),
-          ),
-        ],
-      )
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
@@ -103,7 +58,7 @@ class _CreatedOffers extends State<CreatedOffers> {
           centerTitle: true,
         ),
         body:
-          _offers == null ? ListTile(
+          _offers == null || _offers.length == 0 ? ListTile(
               title: Text("Keine Angebote gefunden", style: TextStyle(fontSize: 20)),
               subtitle: Text("Klicke unten auf das Plus Zeichen, um eins zu erstellen."),
               leading: Icon(Icons.cancel)
@@ -111,12 +66,12 @@ class _CreatedOffers extends State<CreatedOffers> {
           : ListView.builder(
             itemCount: _offers.length,
             itemBuilder: (context, index) {
-              return _createOfferCard(_offers[index], index);
+              return createEditOfferCard(context, _offers[index]);
             }
           ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => Navigator.pushNamed(context, "/createOffer"),
-          tooltip: 'Increment Counter',
+          tooltip: 'Angebot erstellen',
           child: const Icon(Icons.add),
         ),
       )
