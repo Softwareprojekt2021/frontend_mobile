@@ -4,7 +4,6 @@ import 'package:frontend_mobile/components/side_bar.dart';
 import 'package:frontend_mobile/models/offer.dart';
 import 'package:frontend_mobile/services/offer_service.dart';
 import 'package:frontend_mobile/util/notification.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -17,40 +16,28 @@ class _HomeState extends State<Home> {
   final _offerService = OfferService();
 
   List<Offer> _offers;
-  bool _loading = false;
 
   Future<void> _loadOffers() async {
-    await _offerService.fetchRecommendedOffers().then((result) {
-      setState(() {
-        _offers = result;
+    try {
+      await _offerService.fetchRecommendedOffers().then((result) {
+        setState(() {
+          _offers = result;
+        });
       });
-    });
+    } catch (error) {
+      NotificationOverlay.error(error.toString());
+    }
   }
 
   @override
   initState() {
     super.initState();
-
-    setState(() {
-      _loading = true;
-    });
-
-    try {
-      _loadOffers();
-    } catch (error) {
-      NotificationOverlay.error(error.toString());
-    } finally {
-      setState(() {
-        _loading = false;
-      });
-    }
+    _loadOffers();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ModalProgressHUD(
-      inAsyncCall: _loading,
-      child: Scaffold(
+      return Scaffold(
           drawer: SideBar(),
           appBar: AppBar(
             title: Text("Startseite"),
@@ -62,29 +49,38 @@ class _HomeState extends State<Home> {
               ),
             ],
           ),
-          body: Center(
-            child: ListView.builder(
-                itemCount: _offers == null ? 1 : _offers.length + 1,
-                itemBuilder: (context, index) {
-                  if(index == 0) {
-                    return Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            'Empfohlene Angebote',
-                            style: TextStyle(fontSize: 25),
-                          ),
-                        ),
-                    );
-                  }
-                  index -= 1;
-
-                  return createOfferCard(context, _offers[index]);
-                }
+          body: RefreshIndicator(
+            onRefresh: _loadOffers,
+            child: ListView(
+              children: [
+                _offers == null ?
+                ListTile(
+                    title: Text("Keine Angebote gefunden", style: TextStyle(fontSize: 20)),
+                    subtitle: Text("Es konnte keine Verbindung zum Server hergestellt werden."),
+                    leading: Icon(Icons.cancel)
+                )
+                :
+                Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'Empfohlene Angebote',
+                      style: TextStyle(fontSize: 25),
+                    ),
+                  ),
+                ),
+                ListView.builder(
+                    itemCount: _offers == null ? 0 : _offers.length,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return createOfferCard(context, _offers[index]);
+                    }
+                ),
+              ],
             ),
           ),
-      )
-    );
+      );
   }
 }
