@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_mobile/components/offer.dart';
 import 'package:frontend_mobile/components/side_bar.dart';
 import 'package:frontend_mobile/models/offer.dart';
+import 'package:frontend_mobile/screens/search_offers.dart';
 import 'package:frontend_mobile/services/offer_service.dart';
 import 'package:frontend_mobile/util/notification.dart';
 
@@ -26,6 +27,7 @@ class _HomeState extends State<Home> {
       });
     } catch (error) {
       NotificationOverlay.error(error.toString());
+
     }
   }
 
@@ -44,7 +46,14 @@ class _HomeState extends State<Home> {
             centerTitle: true,
             actions: [
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SearchOffer()
+                        )
+                    );
+                  },
                   icon: Icon(Icons.search),
               ),
             ],

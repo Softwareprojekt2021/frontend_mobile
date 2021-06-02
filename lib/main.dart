@@ -8,6 +8,7 @@ import 'package:frontend_mobile/screens/home.dart';
 import 'package:frontend_mobile/screens/login.dart';
 import 'package:frontend_mobile/screens/profile.dart';
 import 'package:frontend_mobile/screens/register.dart';
+import 'package:frontend_mobile/screens/search_offers.dart';
 import 'package:frontend_mobile/screens/view_offer.dart';
 import 'package:frontend_mobile/services/http_service.dart';
 import 'package:frontend_mobile/services/store_service.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
             '/createdOffers': (context) => CreatedOffers(),
             '/editOffer': (context) => EditOffer(),
             '/viewOffer': (context) => ViewOffer(),
+            '/searchOffers': (context) => SearchOffer(),
           },
         )
       )
