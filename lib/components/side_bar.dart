@@ -58,7 +58,7 @@ class _SideBarState extends State<SideBar> {
             },
           ),
           ListTile(
-            title: Text("Meine Chat"),
+            title: Text("Meine Chats"),
             trailing: Icon(Icons.chat),
             onTap: () {
               Navigator.pop(context);
