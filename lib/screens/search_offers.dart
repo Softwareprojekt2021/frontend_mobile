@@ -178,7 +178,11 @@ class _SearchOfferState extends State<SearchOffer> {
                 autocorrect: false,
                 keyboardType: TextInputType.number,
                 controller: priceFormatBegin,
-                onSaved: (value) => _search["priceBegin"] = priceFormatBegin.numberValue,
+                onChanged: (value) {
+                  setState(() {
+                    _search["priceBegin"] = priceFormatBegin.numberValue;
+                  });
+                }
               ),
             ),
           ),
@@ -193,7 +197,11 @@ class _SearchOfferState extends State<SearchOffer> {
                 autocorrect: false,
                 keyboardType: TextInputType.number,
                 controller: priceFormatEnd,
-                onSaved: (value) => _search["priceEnd"] = priceFormatEnd.numberValue,
+                onChanged: (value) {
+                  setState(() {
+                    _search["priceEnd"] = priceFormatEnd.numberValue;
+                  });
+                }
               ),
             ),
           ),
