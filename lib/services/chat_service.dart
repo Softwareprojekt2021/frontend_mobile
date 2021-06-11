@@ -8,7 +8,7 @@ import 'package:frontend_mobile/util/app_url.dart';
 class ChatService {
   //TODO
   deleteChat(int chatId) async {
-
+    return;
   }
 
   //TODO
@@ -16,10 +16,8 @@ class ChatService {
     return;
   }
 
+  //TODO
   sendMessage(Message message) async {
-    //TODO Debug
-    return;
-
     try {
       await HttpService.client.post(AppUrl.message, data: message.toJson());
     } on DioError catch (error) {
@@ -31,7 +29,7 @@ class ChatService {
     }
   }
 
-  //TODO Backend when implemented
+  //TODO
   fetchChats() async {
     //TODO Delete Mockup
     List<Chat> chats = [];
@@ -41,6 +39,7 @@ class ChatService {
 
     return chats;
 
+    /*
     try {
       final response = await HttpService.client.get(AppUrl.messages);
 
@@ -52,9 +51,11 @@ class ChatService {
         throw(error);
       }
     }
+
+     */
   }
 
-  //TODO Backend when implemented
+  //TODO
   fetchChat(int chatId) async {
     //TODO Delete Mockup
     List<Message> messages = [];
@@ -116,6 +117,7 @@ class ChatService {
 
     return chat;
 
+    /*
     try {
       final response = await HttpService.client.get(AppUrl.messages);
 
@@ -127,5 +129,6 @@ class ChatService {
         throw(error);
       }
     }
+     */
   }
 }
