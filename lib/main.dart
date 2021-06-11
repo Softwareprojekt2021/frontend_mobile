@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:frontend_mobile/screens/chat.dart';
+import 'package:frontend_mobile/screens/chats.dart';
 import 'package:frontend_mobile/screens/create_offer.dart';
 import 'package:frontend_mobile/screens/created_offers.dart';
 import 'package:frontend_mobile/screens/edit_offer.dart';
@@ -50,6 +52,8 @@ class MyApp extends StatelessWidget {
             '/editOffer': (context) => EditOffer(),
             '/viewOffer': (context) => ViewOffer(),
             '/searchOffers': (context) => SearchOffer(),
+            '/chats': (context) => Chats(),
+            '/chat': (context) => ChatScreen(),
           },
         )
       )
