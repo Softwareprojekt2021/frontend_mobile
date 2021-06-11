@@ -39,10 +39,10 @@ class _SearchOfferState extends State<SearchOffer> {
           return DropdownButtonFormField(
             decoration: InputDecoration(
               icon: Icon(Icons.category),
+              labelText: "Kategorie"
             ),
             items: list,
             value: _search["category"],
-            hint: Text("Kategorie"),
             onChanged: (value) {
               setState(() {
                 _search["category"] = value;
@@ -74,9 +74,9 @@ class _SearchOfferState extends State<SearchOffer> {
             return DropdownButtonFormField(
               decoration: InputDecoration(
                 icon: Icon(Icons.apartment),
+                labelText: "Standort"
               ),
               items: list,
-              hint: Text("Standort"),
               value: _search["university"],
               onChanged: (value) {
                 setState(() {
@@ -101,10 +101,16 @@ class _SearchOfferState extends State<SearchOffer> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "Filter",
-              style: TextStyle(fontSize: 20),
-            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.filter_alt, size: 30),
+                Text(
+                  "Filter",
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            )
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5, bottom: 5, left: 16, right: 16),
@@ -115,13 +121,16 @@ class _SearchOfferState extends State<SearchOffer> {
             child: buildDropdownUniversity(context),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 5, bottom: 5, left: 16, right: 16),
+            padding: const EdgeInsets.only(top: 15, bottom: 5, left: 16, right: 16),
             child: Row(
               children: [
-                Icon(Icons.attach_money, color: Colors.grey, size: 25),
+                Padding(
+                  padding: const EdgeInsets.only(right: 15),
+                  child: Icon(Icons.attach_money, color: Colors.grey, size: 25),
+                ),
                 Text(
                   "Verkaufsart",
-                  style: TextStyle(fontSize: 15),
+                  style: TextStyle(fontSize: 16, color: Colors.black45),
                 ),
               ],
             )
@@ -193,10 +202,10 @@ class _SearchOfferState extends State<SearchOffer> {
             child: DropdownButtonFormField(
               decoration: InputDecoration(
                 icon: Icon(Icons.reorder),
+                labelText: "Sortieren nach"
               ),
               items: _order,
               value: _search["order"],
-              hint: Text("Sortieren nach"),
               onChanged: (value) {
                 setState(() {
                   _search["order"] = value;
