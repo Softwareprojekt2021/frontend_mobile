@@ -61,7 +61,7 @@ class UserService {
     }
   }
 
-  fetchUniversities() async {
+  Future<List<String>> fetchUniversities() async {
     try {
       final response = await HttpService.client.get(AppUrl.universities);
 

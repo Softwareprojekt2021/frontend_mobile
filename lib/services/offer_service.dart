@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:frontend_mobile/models/offer.dart';
 import 'package:frontend_mobile/services/http_service.dart';
@@ -5,7 +7,7 @@ import 'package:frontend_mobile/util/app_url.dart';
 
 
 class OfferService {
-  fetchCategories() async {
+  Future<List<String>> fetchCategories() async {
     try {
       final response = await HttpService.client.get(AppUrl.categories);
 
@@ -101,15 +103,23 @@ class OfferService {
     }
   }
 
-  //TODO Change route, when Backend in implemented, add search Parameters
-  searchOffers({String text, String university, String category, priceBegin, priceEnd}) async {
+  Future<List<Offer>> searchOffers(Map search) async {
     try {
-      final response = await HttpService.client.get(AppUrl.offers);
+      final response = await HttpService.client.get(AppUrl.filtered, queryParameters: {
+        if(search["text"] != null) "title": search["text"],
+        if(search["category"] != null) "category": search["category"],
+        if(search["university"] != null) "university": search["university"],
+        if(search["type"] != null) "compensation_type": search["type"] == 1 ? "Bar" : "Tausch",
+        if(search["priceEnd"] != null) "max_price": search["priceEnd"],
+        if(search["priceBegin"] != null) "min_price": search["priceBegin"]
+      });
 
       return response.data.map((offer) => Offer.fromJson(offer)).toList().cast<Offer>();
     } on DioError catch (error) {
       if(error.type == DioErrorType.connectTimeout) {
         throw("Server ist nicht erreichbar");
+      } else if (error.type == DioErrorType.response) {
+        return <Offer>[];
       } else {
         throw(error);
       }

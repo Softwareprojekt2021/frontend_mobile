@@ -6,6 +6,7 @@ class AppUrl {
   static const String offer = baseURL + "/offer";
   static const String offers = baseURL + "/offers";
   static const String recommended = baseURL + "/offers/recommend";
+  static const String filtered = baseURL + "/offers/filtered";
   static const String universities = baseURL + "/universities";
   static const String categories = baseURL + "/categories";
   static const String messages = baseURL + "/messages";
