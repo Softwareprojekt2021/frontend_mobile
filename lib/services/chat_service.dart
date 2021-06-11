@@ -6,6 +6,31 @@ import 'package:frontend_mobile/services/http_service.dart';
 import 'package:frontend_mobile/util/app_url.dart';
 
 class ChatService {
+  //TODO
+  deleteChat(int chatId) async {
+
+  }
+
+  //TODO
+  deleteMessage(int messageId) async {
+    return;
+  }
+
+  sendMessage(Message message) async {
+    //TODO Debug
+    return;
+
+    try {
+      await HttpService.client.post(AppUrl.message, data: message.toJson());
+    } on DioError catch (error) {
+      if(error.type == DioErrorType.connectTimeout) {
+        throw("Server ist nicht erreichbar");
+      } else {
+        throw(error);
+      }
+    }
+  }
+
   //TODO Backend when implemented
   fetchChats() async {
     //TODO Delete Mockup
