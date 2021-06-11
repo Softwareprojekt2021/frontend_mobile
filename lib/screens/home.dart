@@ -4,7 +4,6 @@ import 'package:frontend_mobile/components/side_bar.dart';
 import 'package:frontend_mobile/models/offer.dart';
 import 'package:frontend_mobile/screens/search_offers.dart';
 import 'package:frontend_mobile/services/offer_service.dart';
-import 'package:frontend_mobile/util/notification.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -16,80 +15,89 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final _offerService = OfferService();
 
-  List<Offer> _offers;
-
-  Future<void> _loadOffers() async {
-    try {
-      await _offerService.fetchRecommendedOffers().then((result) {
-        setState(() {
-          _offers = result;
-        });
-      });
-    } catch (error) {
-      NotificationOverlay.error(error.toString());
-
-    }
-  }
-
-  @override
-  initState() {
-    super.initState();
-    _loadOffers();
-  }
-
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
-          drawer: SideBar(),
-          appBar: AppBar(
-            title: Text("Startseite"),
-            centerTitle: true,
-            actions: [
-              IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SearchOffer()
-                        )
-                    );
-                  },
-                  icon: Icon(Icons.search),
-              ),
-            ],
-          ),
-          body: RefreshIndicator(
-            onRefresh: _loadOffers,
-            child: ListView(
-              children: [
-                _offers == null ?
-                ListTile(
-                    title: Text("Keine Angebote gefunden", style: TextStyle(fontSize: 20)),
-                    subtitle: Text("Es konnte keine Verbindung zum Server hergestellt werden."),
-                    leading: Icon(Icons.cancel)
-                )
-                :
-                Align(
-                  alignment: Alignment.center,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      'Empfohlene Angebote',
-                      style: TextStyle(fontSize: 25),
-                    ),
+      return FutureBuilder<List<Offer>> (
+        future: _offerService.fetchRecommendedOffers(),
+        builder: (BuildContext context, AsyncSnapshot<List<Offer>> snapshot) {
+          if(snapshot.hasData) {
+            return Scaffold(
+              drawer: SideBar(),
+              appBar: AppBar(
+                title: Text("Startseite"),
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SearchOffer()
+                          )
+                      );
+                    },
+                    icon: Icon(Icons.search),
                   ),
+                ],
+              ),
+              body: ListView(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'Empfohlene Angebote',
+                          style: TextStyle(fontSize: 25),
+                        ),
+                      ),
+                    ),
+                    snapshot.data == null || snapshot.data.length == 0 ?
+                    ListTile(
+                        title: Text("Keine Angebote gefunden", style: TextStyle(fontSize: 20)),
+                        leading: Icon(Icons.cancel)
+                    )
+                    :
+                    ListView.builder(
+                        itemCount: snapshot.data == null ? 0 : snapshot.data.length,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return createOfferCard(context, snapshot.data[index]);
+                        }
+                    ),
+                  ],
                 ),
-                ListView.builder(
-                    itemCount: _offers == null ? 0 : _offers.length,
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return createOfferCard(context, _offers[index]);
-                    }
-                ),
-              ],
-            ),
-          ),
+            );
+          } else {
+            return Scaffold(
+              drawer: SideBar(),
+              appBar: AppBar(
+                title: Text("Startseite"),
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SearchOffer()
+                          )
+                      );
+                    },
+                    icon: Icon(Icons.search),
+                  ),
+                ],
+              ),
+              body: Align(
+                alignment: Alignment.center,
+                child: snapshot.hasError ?
+                  Text(snapshot.error.toString(), style: TextStyle(fontSize: 20)) :
+                  CircularProgressIndicator()
+              )
+            );
+          }
+        }
       );
   }
 }

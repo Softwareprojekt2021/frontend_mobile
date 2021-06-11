@@ -69,7 +69,7 @@ class OfferService {
     }
   }
 
-  fetchCreatedOffers() async {
+  Future<List<Offer>> fetchCreatedOffers() async {
     try {
       final response = await HttpService.client.get(AppUrl.offers);
 
@@ -77,21 +77,24 @@ class OfferService {
     } on DioError catch (error) {
       if(error.type == DioErrorType.connectTimeout) {
         throw("Server ist nicht erreichbar");
+      } else if (error.type == DioErrorType.response) {
+        return <Offer>[];
       } else {
         throw(error);
       }
     }
   }
 
-  //TODO Change route, when Backend in implemented
-  fetchRecommendedOffers() async {
+  Future<List<Offer>> fetchRecommendedOffers() async {
     try {
-      final response = await HttpService.client.get(AppUrl.offers);
+      final response = await HttpService.client.get(AppUrl.recommended);
 
       return response.data.map((offer) => Offer.fromJson(offer)).toList().cast<Offer>();
     } on DioError catch (error) {
       if(error.type == DioErrorType.connectTimeout) {
         throw("Server ist nicht erreichbar");
+      } else if (error.type == DioErrorType.response) {
+        return <Offer>[];
       } else {
         throw(error);
       }

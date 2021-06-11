@@ -5,7 +5,7 @@ class Message {
   Message({this.id, this.message, this.timestamp, this.userId, this.offerId});
 
   Message.fromJson(Map<String, dynamic> json)
-      : id = int.parse(json['id']),
+      : id = json['id'],
         message = json['message'],
         timestamp = json['timestamp'],
         userId = json['user_id'],
