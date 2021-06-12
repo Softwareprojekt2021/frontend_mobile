@@ -21,10 +21,13 @@ class _HomeState extends State<Home> {
         builder: (BuildContext context, AsyncSnapshot<List<Offer>> snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data == null || snapshot.data.length == 0) {
-              return ListTile(
+              return Align(
+                alignment: Alignment.center,
+                child: ListTile(
                   title: Text("Keine Angebote gefunden",
                       style: TextStyle(fontSize: 20)),
-                  leading: Icon(Icons.cancel));
+                  leading: Icon(Icons.cancel))
+              );
             } else {
               return ListView.builder(
                   itemCount: snapshot.data == null ? 0 : snapshot.data.length,

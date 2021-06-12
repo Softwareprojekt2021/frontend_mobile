@@ -249,10 +249,13 @@ class _SearchOfferState extends State<SearchOffer> {
       builder: (BuildContext context, AsyncSnapshot<List<Offer>> snapshot) {
         if(snapshot.hasData) {
           if(snapshot.data == null || snapshot.data.length == 0) {
-            return ListTile(
-              title: Text("Keine Angebote gefunden", style: TextStyle(fontSize: 20)),
-              subtitle: Text("Es wurden keine Angebote gefunden oder der Server ist nicht erreichbar."),
-              leading: Icon(Icons.cancel)
+            return Align(
+              alignment: Alignment.center,
+              child: ListTile(
+                  title: Text("Keine Angebote gefunden", style: TextStyle(fontSize: 20)),
+                  subtitle: Text("Es wurden keine Angebote gefunden oder der Server ist nicht erreichbar."),
+                  leading: Icon(Icons.cancel)
+              )
             );
           } else {
 

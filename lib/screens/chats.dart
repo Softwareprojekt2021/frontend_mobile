@@ -20,10 +20,13 @@ class _CreatedChats extends State<Chats> {
       builder: (BuildContext context, AsyncSnapshot<List<Chat>> snapshot) {
         if(snapshot.hasData) {
           if(snapshot.data == null || snapshot.data.length == 0) {
-            return ListTile(
-              title: Text("Keine Chats gefunden", style: TextStyle(fontSize: 20)),
-              subtitle: Text("Du hasst zurzeit keine aktiven Chats"),
-              leading: Icon(Icons.cancel)
+            return Align(
+              alignment: Alignment.center,
+              child: ListTile(
+                  title: Text("Keine Chats gefunden", style: TextStyle(fontSize: 20)),
+                  subtitle: Text("Du hasst zurzeit keine aktiven Chats"),
+                  leading: Icon(Icons.cancel)
+              )
             );
           } else {
             return ListView.builder(
