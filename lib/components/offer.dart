@@ -61,7 +61,7 @@ Widget createOfferCard(BuildContext context, Offer offer) {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ViewOffer(offer: offer)
+                        builder: (context) => ViewOffer(offerId: offer.id)
                     )
                 );
               },

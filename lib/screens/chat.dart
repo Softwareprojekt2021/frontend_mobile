@@ -53,11 +53,13 @@ class _CreatedChatScreen extends State<ChatScreen> {
 
   Future<void> _sendMessage(Chat chat) async {
     if(textEditingController.text.length != 0) {
+
       Message message = new Message(
           message: textEditingController.text,
           userId: StoreService.store.state.user.id,
           timestamp: DateTime.now().toString().split(".")[0],
           offerId: chat.offerId);
+
       try {
         await _chatService.sendMessage(message);
 
@@ -124,12 +126,6 @@ class _CreatedChatScreen extends State<ChatScreen> {
           );
         }
     );
-  }
-
-  @override
-  initState() {
-    super.initState();
-    chatStream = _refreshChat(Duration(seconds: 5));
   }
 
   Stream<Chat> _refreshChat(Duration interval) async* {
@@ -267,6 +263,12 @@ class _CreatedChatScreen extends State<ChatScreen> {
         return CircularProgressIndicator();
       }
     }
+  }
+
+  @override
+  initState() {
+    super.initState();
+    chatStream = _refreshChat(Duration(seconds: 5));
   }
 
   @override

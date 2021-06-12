@@ -19,6 +19,22 @@ class OfferService {
     }
   }
 
+  Future<Offer> fetchOffer(int offerId) async {
+    try {
+      final response = await HttpService.client.get(AppUrl.offer + "/" + offerId.toString());
+
+      return Offer.fromJson(response.data);
+    } on DioError catch (error) {
+      if(error.type == DioErrorType.connectTimeout) {
+        throw("Server ist nicht erreichbar");
+      } else if (error.type == DioErrorType.response) {
+        return Offer();
+      } else {
+        throw(error);
+      }
+    }
+  }
+
   createOffer(Offer offer) async {
     try {
       await HttpService.client.post(AppUrl.offer, data: offer.toJson());
