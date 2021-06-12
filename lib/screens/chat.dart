@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bubble/bubble.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,7 +9,6 @@ import 'package:frontend_mobile/models/message.dart';
 import 'package:frontend_mobile/services/chat_service.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/util/notification.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class ChatScreen extends StatefulWidget {
   final int chatId;
@@ -24,95 +24,59 @@ class ChatScreen extends StatefulWidget {
 class _CreatedChatScreen extends State<ChatScreen> {
   final _chatService = ChatService();
   final TextEditingController textEditingController = new TextEditingController();
+  Stream<Chat> chatStream;
 
-  Timer timer;
-  Chat _chat;
-  bool _loading = false;
-
-  Future<void> _loadChat() async {
-    await _chatService.fetchChat(widget.chatId).then((result) {
-      setState(() {
-        _chat = result;
-      });
-    });
-  }
-
-  Future<void> _deleteChat() async {
-    setState(() {
-      _loading = true;
-    });
-
+  Future<void> _deleteChat(Chat chat) async {
     try {
-      await _chatService.deleteChat(_chat.id);
+      await _chatService.deleteChat(chat.id);
 
       Navigator.pushNamed(context, "/chats");
       NotificationOverlay.success("Chat wurde gelöscht");
     } catch (error) {
       NotificationOverlay.error(error.toString());
-    } finally {
-      setState(() {
-        _loading = false;
-      });
     }
   }
 
-  Future<void> _deleteMessage(Message message) async {
-    setState(() {
-      _loading = true;
-    });
-
+  Future<void> _deleteMessage(Chat chat, Message message) async {
     try {
       await _chatService.deleteMessage(message.id);
 
       setState(() {
-        _chat.messages.remove(message);
+        chat.messages.remove(message);
       });
 
       NotificationOverlay.success("Nachricht wurde gelöscht");
     } catch (error) {
       NotificationOverlay.error(error.toString());
-    } finally {
-      setState(() {
-        _loading = false;
-      });
     }
   }
 
-  Future<void> _sendMessage() async {
+  Future<void> _sendMessage(Chat chat) async {
     if(textEditingController.text.length != 0) {
       Message message = new Message(
           message: textEditingController.text,
           userId: StoreService.store.state.user.id,
           timestamp: DateTime.now().toString().split(".")[0],
-          offerId: _chat.offerId);
-
-      setState(() {
-        _loading = true;
-      });
-
+          offerId: chat.offerId);
       try {
         await _chatService.sendMessage(message);
 
-        if(_chat.messages == null) {
-          _chat.messages = [];
+        if(chat.messages == null) {
+          chat.messages = [];
         }
 
         setState(() {
-          _chat.messages.add(message);
+          chat.messages.add(message);
         });
 
         textEditingController.clear();
       } catch (error) {
         NotificationOverlay.error(error.toString());
-      } finally {
-        setState(() {
-          _loading = false;
-        });
       }
     }
   }
 
-  void _showDeleteDialogMessage(Message message) {
+  void _showDeleteDialogMessage(Chat chat, Message message) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -124,7 +88,7 @@ class _CreatedChatScreen extends State<ChatScreen> {
                 child: Text("OK"),
                 onPressed: () async {
                   Navigator.pop(context, true);
-                  await _deleteMessage(message);
+                  await _deleteMessage(chat, message);
                 },
               ),
               TextButton(
@@ -137,7 +101,7 @@ class _CreatedChatScreen extends State<ChatScreen> {
     );
   }
 
-  void _showDeleteDialogChat() {
+  void _showDeleteDialogChat(Chat chat) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -149,7 +113,7 @@ class _CreatedChatScreen extends State<ChatScreen> {
                 child: Text("OK"),
                 onPressed: () async {
                   Navigator.pop(context, true);
-                  await _deleteChat();
+                  await _deleteChat(chat);
                 },
               ),
               TextButton(
@@ -165,61 +129,75 @@ class _CreatedChatScreen extends State<ChatScreen> {
   @override
   initState() {
     super.initState();
+    chatStream = _refreshChat(Duration(seconds: 5));
+  }
 
-    setState(() {
-      _loading = true;
-    });
-
-    try {
-      _loadChat();
-    } catch (error) {
-      NotificationOverlay.error(error.toString());
-    } finally {
-      setState(() {
-        _loading = false;
-      });
+  Stream<Chat> _refreshChat(Duration interval) async* {
+    while (true) {
+      log(DateTime.now().toString() + " Refreshing Chat..");
+      yield await _chatService.fetchChat(widget.chatId);
+      await Future.delayed(interval);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return ModalProgressHUD(
-      inAsyncCall: _loading,
-      child: Scaffold(
-          appBar: AppBar(
-            title: _chat == null ? Text("Chat") : Text(_chat.title),
-            actions: [
-              IconButton(
+  Widget buildTextBox(BuildContext context, Chat chat) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        child: Row(
+          children: <Widget>[
+            // Text input
+            Flexible(
+              child: Container(
+                margin: new EdgeInsets.symmetric(horizontal: 10.0),
+                child: TextField(
+                  style: TextStyle(fontSize: 15.0),
+                  controller: textEditingController,
+                  decoration: InputDecoration.collapsed(
+                    hintText: 'Schreibe eine Nachricht',
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              margin: new EdgeInsets.symmetric(horizontal: 8.0),
+              child: new IconButton(
+                icon: new Icon(Icons.send),
                 onPressed: () {
-                  _showDeleteDialogChat();
+                  _sendMessage(chat);
                 },
-                icon: Icon(Icons.delete),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.star_border),
-              ),
-            ],
-          ),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              _chat == null ||
-              _chat.messages == null ||
-              _chat.messages.length == 0
-          ? Padding(
-              padding: EdgeInsets.only(
-                  top: 5, bottom: 5, left: 20, right: 20),
-              child: Bubble(
-                alignment: Alignment.center,
-                child: Text("Keine Nachrichten"),
-              ))
-          : Expanded(
-            child: ListView.builder(
-              itemCount: _chat.messages.length,
+            ),
+          ],
+        ),
+        width: double.infinity,
+        height: 50.0,
+        decoration: new BoxDecoration(
+            border: new Border(top: new BorderSide(width: 0.5)),
+            color: Colors.white),
+      )
+    );
+  }
+
+  Widget buildBody(BuildContext context, AsyncSnapshot<Chat> snapshot) {
+    if(snapshot.hasData) {
+      if(snapshot.data.messages == null || snapshot.data.messages.length == 0) {
+        return Padding(
+          padding: EdgeInsets.only(
+              top: 5, bottom: 5, left: 20, right: 20),
+          child: Bubble(
+            alignment: Alignment.center,
+            child: Text("Keine Nachrichten"),
+          ));
+      } else {
+        return Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+              itemCount: snapshot.data.messages.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                if (_chat.messages[index].userId ==
+                if (snapshot.data.messages[index].userId ==
                     StoreService.store.state.user.id) {
                   return Padding(
                       padding: EdgeInsets.only(top: 5, bottom: 5, left: 20, right: 20),
@@ -229,28 +207,28 @@ class _CreatedChatScreen extends State<ChatScreen> {
                           color: Colors.lightBlue,
                           nip: BubbleNip.rightTop,
                           child: Text(
-                            _chat.messages[index].message,
+                            snapshot.data.messages[index].message,
                             style: TextStyle(fontSize: 17),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsets.only(top: 1),
-                            child: Row(
+                          child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Text(_chat.messages[index].timestamp,
+                                Text(snapshot.data.messages[index].timestamp,
                                     style: TextStyle(fontSize: 10)),
                                 IconButton(
                                     onPressed: () {
-                                      _showDeleteDialogMessage(_chat.messages[index]);
+                                      _showDeleteDialogMessage(snapshot.data ,snapshot.data.messages[index]);
                                     },
                                     icon: Icon(Icons.delete, size: 20))
-                                ]
-                              ),
-                            ),
-                          ],
-                        )
-                      );
+                              ]
+                          ),
+                        ),
+                      ],
+                      )
+                  );
                 } else {
                   return Padding(
                       padding: EdgeInsets.only(
@@ -260,7 +238,7 @@ class _CreatedChatScreen extends State<ChatScreen> {
                           alignment: Alignment.centerLeft,
                           nip: BubbleNip.leftTop,
                           child: Text(
-                            _chat.messages[index].message,
+                            snapshot.data.messages[index].message,
                             style: TextStyle(fontSize: 17),
                           ),
                         ),
@@ -268,54 +246,53 @@ class _CreatedChatScreen extends State<ChatScreen> {
                           padding: EdgeInsets.only(top: 10),
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(_chat.messages[index].timestamp,
+                            child: Text(snapshot.data.messages[index].timestamp,
                                 style: TextStyle(fontSize: 10)),
                           ),
                         ),
                       ]));
-                  }
-                })
+                }
+              })
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  child: Row(
-                    children: <Widget>[
-                      // Text input
-                      Flexible(
-                        child: Container(
-                          margin: new EdgeInsets.symmetric(horizontal: 10.0),
-                          child: TextField(
-                            style: TextStyle(fontSize: 15.0),
-                            controller: textEditingController,
-                            decoration: InputDecoration.collapsed(
-                              hintText: 'Schreibe eine Nachricht',
-                            ),
-                          ),
-                        ),
-                      ),
+              buildTextBox(context, snapshot.data),
+          ],
+        );
+      }
+    } else {
+      if(snapshot.hasError) {
+        return SnackBar(
+            content: Text(snapshot.error.toString())
+        );
+      } else {
+        return CircularProgressIndicator();
+      }
+    }
+  }
 
-                      // Send Message Button
-                      Container(
-                        margin: new EdgeInsets.symmetric(horizontal: 8.0),
-                        child: new IconButton(
-                          icon: new Icon(Icons.send),
-                          onPressed: () {
-                            _sendMessage();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  width: double.infinity,
-                  height: 50.0,
-                  decoration: new BoxDecoration(
-                      border: new Border(top: new BorderSide(width: 0.5)),
-                      color: Colors.white),
-                )
-              ),
-            ],
-          )),
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<Chat>(
+      stream: chatStream,
+      builder: (BuildContext context, AsyncSnapshot<Chat> snapshot) {
+        return Scaffold(
+            appBar: AppBar(
+              title: snapshot.data == null ? Text("Chat") : Text(snapshot.data.title),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    _showDeleteDialogChat(snapshot.data);
+                  },
+                  icon: Icon(Icons.delete),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.star_border),
+                ),
+              ],
+            ),
+            body: buildBody(context, snapshot)
+        );
+      }
     );
   }
 }

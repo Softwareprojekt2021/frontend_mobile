@@ -56,7 +56,7 @@ class ChatService {
   }
 
   //TODO
-  fetchChat(int chatId) async {
+  Future<Chat> fetchChat(int chatId) async {
     //TODO Delete Mockup
     List<Message> messages = [];
 
@@ -78,36 +78,6 @@ class ChatService {
     messages.add(new Message(
         id: 3,
         message: "Was willst du? jo jo jo sdaisdf",
-        userId: 1,
-        timestamp: "2021-06-10 17:52"));
-    messages.add(new Message(
-        id: 4,
-        message: "Was willst du? jo jo jo sdaisdf",
-        userId: 1,
-        timestamp: "2021-06-10 17:52"));
-    messages.add(new Message(
-        id: 5,
-        message: "Was willst du? jo jo jo sdaisdf",
-        userId: 3,
-        timestamp: "2021-06-10 17:52"));
-    messages.add(new Message(
-        id: 6,
-        message: "Was willst du? jo jo jo sdaisdf",
-        userId: 1,
-        timestamp: "2021-06-10 17:52"));
-    messages.add(new Message(
-        id: 7,
-        message: "Was willst du? jo jo jo sdaisdf",
-        userId: 3,
-        timestamp: "2021-06-10 17:52"));
-    messages.add(new Message(
-        id: 8,
-        message: "Was willst du? jo jo jo sdaifdgojsapdfgpoksopdkfgokpsdkfpogopksdgfkopsdkofpgokpsdfgokpsdfkopgskdpofgkopsdfkopgskodpfgsdf",
-        userId: 3,
-        timestamp: "2021-06-10 17:52"));
-    messages.add(new Message(
-        id: 9,
-        message: "Was willst du? jo jo asdfpomjasdpofopajksdfopaskopdfokpasdfokpasokpdfokpasdokfpajo sdaisdf",
         userId: 1,
         timestamp: "2021-06-10 17:52"));
 

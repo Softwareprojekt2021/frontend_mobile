@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:frontend_mobile/models/offer.dart';
 import 'package:frontend_mobile/services/http_service.dart';

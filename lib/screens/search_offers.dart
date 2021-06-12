@@ -53,7 +53,7 @@ class _SearchOfferState extends State<SearchOffer> {
               alignment: Alignment.center,
               child: snapshot.hasError ?
               Text(snapshot.error.toString(), style: TextStyle(fontSize: 20)) :
-              CircularProgressIndicator()
+              LinearProgressIndicator()
           );
         }
       }
@@ -88,7 +88,7 @@ class _SearchOfferState extends State<SearchOffer> {
               alignment: Alignment.center,
               child: snapshot.hasError ?
               Text(snapshot.error.toString(), style: TextStyle(fontSize: 20)) :
-              CircularProgressIndicator()
+              LinearProgressIndicator()
             );
           }
         }
