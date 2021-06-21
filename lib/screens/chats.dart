@@ -3,8 +3,6 @@ import 'package:frontend_mobile/components/chat.dart';
 import 'package:frontend_mobile/components/side_bar.dart';
 import 'package:frontend_mobile/models/chat.dart';
 import 'package:frontend_mobile/services/chat_service.dart';
-import 'package:frontend_mobile/util/notification.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class Chats extends StatefulWidget {
   @override
@@ -16,59 +14,49 @@ class Chats extends StatefulWidget {
 class _CreatedChats extends State<Chats> {
   final _chatService = ChatService();
 
-  List<Chat> _chats;
-  bool _loading = false;
-
-  Future<void> _loadChats() async {
-    await _chatService.fetchChats().then((result) {
-      setState(() {
-        _chats = result;
-      });
-    });
-  }
-
-  @override
-  initState() {
-    super.initState();
-
-    setState(() {
-      _loading = true;
-    });
-
-    try {
-      _loadChats();
-    } catch (error) {
-      NotificationOverlay.error(error.toString());
-    } finally {
-      setState(() {
-        _loading = false;
-      });
-    }
+  Widget buildBody(BuildContext context) {
+    return FutureBuilder<List<Chat>>(
+      future: _chatService.fetchChats(),
+      builder: (BuildContext context, AsyncSnapshot<List<Chat>> snapshot) {
+        if(snapshot.hasData) {
+          if(snapshot.data == null || snapshot.data.length == 0) {
+            return Align(
+              alignment: Alignment.center,
+              child: ListTile(
+                  title: Text("Keine Chats gefunden", style: TextStyle(fontSize: 20)),
+                  subtitle: Text("Du hasst zurzeit keine aktiven Chats"),
+                  leading: Icon(Icons.cancel)
+              )
+            );
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (context, index) {
+                return createChatCard(context, snapshot.data[index]);
+              }
+            );
+          }
+        } else {
+          return Align(
+            alignment: Alignment.center,
+            child: snapshot.hasError ?
+            Text(snapshot.error.toString(), style: TextStyle(fontSize: 20)) :
+            CircularProgressIndicator()
+          );
+        }
+      }
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return ModalProgressHUD(
-        inAsyncCall: _loading,
-        child: Scaffold(
-          drawer: SideBar(),
-          appBar: AppBar(
-            title: Text("Meine Chats"),
-            centerTitle: true,
-          ),
-          body:
-          _chats == null || _chats.length == 0 ? ListTile(
-              title: Text("Keine Chats gefunden", style: TextStyle(fontSize: 20)),
-              subtitle: Text("Du hasst zurzeit keine aktiven Chats"),
-              leading: Icon(Icons.cancel)
-          )
-              : ListView.builder(
-              itemCount: _chats.length,
-              itemBuilder: (context, index) {
-                return createChatCard(context, _chats[index]);
-              }
-          ),
-        )
+    return Scaffold(
+        drawer: SideBar(),
+        appBar: AppBar(
+          title: Text("Meine Chats"),
+          centerTitle: true,
+        ),
+        body: buildBody(context)
     );
   }
 }

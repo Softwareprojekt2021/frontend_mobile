@@ -8,7 +8,7 @@ class Offer {
   Offer({this.id, this.title, this.description, this.compensationType, this.category, this.price, this.sold, this.pictures});
 
   Offer.fromJson(Map<String, dynamic> json)
-      : id = int.parse(json['id']),
+      : id = json['id'],
         title = json['title'],
         description = json['description'],
         compensationType = json['compensation_type'],

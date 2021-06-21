@@ -10,7 +10,7 @@ class Chat {
   Chat({this.id, this.offerId, this.title, this.picture, this.user, this.messages});
 
   Chat.fromJson(Map<String, dynamic> json)
-      : id = int.parse(json['id']),
+      : id = json['id'],
         offerId = json['offer_id'],
         title = json['title'],
         picture = json['picture'],

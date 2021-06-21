@@ -6,7 +6,7 @@ class User {
   User({this.id, this.email, this.password, this.firstName, this.lastName, this.course, this.profilePicture, this.university, this.admin});
 
   User.fromJson(Map<String, dynamic> json)
-      : id = int.parse(json['id']),
+      : id = json['id'],
         email = json['e_mail'],
         password = json['password'],
         firstName = json['first_name'],
@@ -14,7 +14,7 @@ class User {
         course = json['course'],
         profilePicture = json['profile_picture'],
         university = json['university'],
-        admin = json['admin'] == "true" ? true : false;
+        admin = json['admin'];
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -25,7 +25,7 @@ class User {
     'course': course,
     'profile_picture': profilePicture,
     'university': university,
-    'admin': admin == true ? 1 : 0
+    'admin': admin
   };
 
   User clone() => User(id: id, email: email, password: password, firstName: firstName, lastName: lastName, course: course, profilePicture: profilePicture, university: university, admin: admin);

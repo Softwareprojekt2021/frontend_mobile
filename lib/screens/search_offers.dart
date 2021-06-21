@@ -4,8 +4,6 @@ import 'package:frontend_mobile/components/offer.dart';
 import 'package:frontend_mobile/models/offer.dart';
 import 'package:frontend_mobile/services/offer_service.dart';
 import 'package:frontend_mobile/services/user_service.dart';
-import 'package:frontend_mobile/util/notification.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class SearchOffer extends StatefulWidget {
   @override
@@ -21,135 +19,121 @@ class _SearchOfferState extends State<SearchOffer> {
   var priceFormatBegin = MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.', rightSymbol: '€');
   var priceFormatEnd = MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.', rightSymbol: '€');
   var _scaffoldKey = new GlobalKey<ScaffoldState>();
-  var _categories = <DropdownMenuItem>[];
-  var _universities = <DropdownMenuItem>[];
   var _order = <DropdownMenuItem>[];
-  int _showPrice;
 
-  String _searchUniversity;
-  String _searchText;
-  String _searchCategory;
-  String _searchOrder;
-  double _searchPriceBegin;
-  double _searchPriceEnd;
+  Map _search = new Map();
 
   TextEditingController _searchQueryController = TextEditingController();
 
-  bool _loading = false;
-  List<Offer> _offers;
+  Widget buildDropdownCategory(BuildContext context) {
+    return FutureBuilder<List<String>>(
+      future: _offerService.fetchCategories(),
+      builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+        if(snapshot.hasData) {
+          var list = <DropdownMenuItem>[];
 
-  Future<void> _loadOffers() async {
-    setState(() {
-      _loading = true;
-    });
+          for(String category in snapshot.data) {
+            list.add(DropdownMenuItem(child: Text(category), value: category));
+          }
 
-    try {
-      await _offerService.searchOffers(
-          category: _searchCategory,
-          text: _searchText,
-          university: _searchUniversity,
-          priceBegin: _searchPriceBegin,
-          priceEnd: _searchPriceEnd).then((result) {
-        setState(() {
-          _offers = result;
-        });
-      });
-    } catch (error) {
-      NotificationOverlay.error(error.toString());
-    } finally {
-      setState(() {
-        _loading = false;
-      });
-    }
-
-    if(_searchOrder == "descPrice") {
-      _offers.sort((a, b) => -a.price.compareTo(b.price));
-    } else if (_searchOrder == "ascPrice") {
-      _offers.sort((a, b) => a.price.compareTo(b.price));
-    }
+          return DropdownButtonFormField(
+            decoration: InputDecoration(
+              icon: Icon(Icons.category),
+              labelText: "Kategorie"
+            ),
+            items: list,
+            value: _search["category"],
+            onChanged: (value) {
+              setState(() {
+                _search["category"] = value;
+              });
+            });
+        } else {
+          return Align(
+              alignment: Alignment.center,
+              child: snapshot.hasError ?
+              Text(snapshot.error.toString(), style: TextStyle(fontSize: 20)) :
+              LinearProgressIndicator()
+          );
+        }
+      }
+    );
   }
 
-  Future <void> _loadFilterData() async {
-    setState(() {
-      _loading = true;
-    });
+  Widget buildDropdownUniversity(BuildContext context) {
+    return FutureBuilder<List<String>>(
+        future: _userService.fetchUniversities(),
+        builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+          if(snapshot.hasData) {
+            var list = <DropdownMenuItem>[];
 
-    _order.add(DropdownMenuItem(child: Text("Preis absteigend"), value: "descPrice"));
-    _order.add(DropdownMenuItem(child: Text("Preis aufsteigend"), value: "ascPrice"));
+            for(String university in snapshot.data) {
+              list.add(DropdownMenuItem(child: Text(university), value: university));
+            }
 
-    try {
-      List<String> _fetchedUniversities = await _userService.fetchUniversities();
-      List<String> _fetchedCategories = await _offerService.fetchCategories();
-
-      for (String university in _fetchedUniversities) {
-        setState(() {
-          _universities.add(
-              DropdownMenuItem(child: Text(university), value: university));
-        });
-      }
-
-      for (String category in _fetchedCategories) {
-        setState(() {
-          _categories.add(
-              DropdownMenuItem(child: Text(category), value: category));
-        });
-      }
-    } catch (error) {
-
-    } finally {
-      setState(() {
-        _loading = false;
-      });
-    }
+            return DropdownButtonFormField(
+              decoration: InputDecoration(
+                icon: Icon(Icons.apartment),
+                labelText: "Standort"
+              ),
+              items: list,
+              value: _search["university"],
+              onChanged: (value) {
+                setState(() {
+                  _search["university"] = value;
+                });
+              });
+          } else {
+            return Align(
+              alignment: Alignment.center,
+              child: snapshot.hasError ?
+              Text(snapshot.error.toString(), style: TextStyle(fontSize: 20)) :
+              LinearProgressIndicator()
+            );
+          }
+        }
+    );
   }
 
-  Widget _filterDrawer(BuildContext context) {
+  Widget buildDrawer(BuildContext context) {
     return Drawer(
       child: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "Filter",
-              style: TextStyle(fontSize: 20),
-            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.filter_alt, size: 30),
+                Text(
+                  "Filter",
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            )
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5, bottom: 5, left: 16, right: 16),
-            child: DropdownButtonFormField(
-              decoration: InputDecoration(
-                icon: Icon(Icons.category),
-              ),
-              items: _categories,
-              value: _searchCategory,
-              hint: Text("Kategorie"),
-              onChanged: (value) {
-                setState(() {
-                  _searchCategory = value;
-                });
-            }),
+            child: buildDropdownCategory(context),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5, bottom: 5, left: 16, right: 16),
-            child: DropdownButtonFormField(
-              decoration: InputDecoration(
-                icon: Icon(Icons.apartment),
-              ),
-              items: _universities,
-              hint: Text("Standort"),
-              value: _searchUniversity,
-              onChanged: (value) {
-                setState(() {
-                  _searchUniversity = value;
-                });
-            }),
+            child: buildDropdownUniversity(context),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 5, bottom: 5, left: 16, right: 16),
-            child: Text(
-              "Verkaufsart",
-              style: TextStyle(fontSize: 15),
-            ),
+            padding: const EdgeInsets.only(top: 15, bottom: 5, left: 16, right: 16),
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 15),
+                  child: Icon(Icons.attach_money, color: Colors.grey, size: 25),
+                ),
+                Text(
+                  "Verkaufsart",
+                  style: TextStyle(fontSize: 16, color: Colors.black45),
+                ),
+              ],
+            )
           ),
           Padding(
             padding: EdgeInsets.only(top: 5, bottom: 5, left: 16, right: 16),
@@ -159,10 +143,10 @@ class _SearchOfferState extends State<SearchOffer> {
                 value: 1,
                 onChanged: (value) {
                   setState(() {
-                    _showPrice = value;
+                    _search["type"] = value;
                   });
                 },
-                groupValue: _showPrice,
+                groupValue: _search["type"],
               ),
             ),
           ),
@@ -174,17 +158,17 @@ class _SearchOfferState extends State<SearchOffer> {
                 value: 0,
                 onChanged: (value) {
                   setState(() {
-                    _showPrice = value;
-                    _searchPriceBegin = null;
-                    _searchPriceEnd = null;
+                    _search["type"] = value;
+                    _search["priceEnd"] = null;
+                    _search["priceBegin"] = null;
                   });
                 },
-                groupValue: _showPrice,
+                groupValue: _search["type"],
               ),
             ),
           ),
           Visibility(
-            visible: _showPrice == 1 ? true : false,
+            visible: _search["type"] == 1 ? true : false,
             child: Padding(
               padding: EdgeInsets.only(top: 5, bottom: 5, left: 16, right: 16),
               child: TextFormField(
@@ -194,12 +178,16 @@ class _SearchOfferState extends State<SearchOffer> {
                 autocorrect: false,
                 keyboardType: TextInputType.number,
                 controller: priceFormatBegin,
-                onSaved: (value) => _searchPriceBegin = priceFormatBegin.numberValue,
+                onChanged: (value) {
+                  setState(() {
+                    _search["priceBegin"] = priceFormatBegin.numberValue;
+                  });
+                }
               ),
             ),
           ),
           Visibility(
-            visible: _showPrice == 1 ? true : false,
+            visible: _search["type"] == 1 ? true : false,
             child: Padding(
               padding: EdgeInsets.only(top: 5, bottom: 5, left: 16, right: 16),
               child: TextFormField(
@@ -209,7 +197,11 @@ class _SearchOfferState extends State<SearchOffer> {
                 autocorrect: false,
                 keyboardType: TextInputType.number,
                 controller: priceFormatEnd,
-                onSaved: (value) => _searchPriceEnd = priceFormatEnd.numberValue,
+                onChanged: (value) {
+                  setState(() {
+                    _search["priceEnd"] = priceFormatEnd.numberValue;
+                  });
+                }
               ),
             ),
           ),
@@ -218,13 +210,13 @@ class _SearchOfferState extends State<SearchOffer> {
             child: DropdownButtonFormField(
               decoration: InputDecoration(
                 icon: Icon(Icons.reorder),
+                labelText: "Sortieren nach"
               ),
               items: _order,
-              value: _searchOrder,
-              hint: Text("Sortieren nach"),
+              value: _search["order"],
               onChanged: (value) {
                 setState(() {
-                  _searchOrder = value;
+                  _search["order"] = value;
                 });
               }),
           ),
@@ -233,7 +225,7 @@ class _SearchOfferState extends State<SearchOffer> {
     );
   }
 
-  Widget _searchField(BuildContext context) {
+  Widget buildSearchField(BuildContext context) {
     return TextField(
       controller: _searchQueryController,
       autofocus: false,
@@ -245,82 +237,103 @@ class _SearchOfferState extends State<SearchOffer> {
       style: TextStyle(color: Colors.white, fontSize: 16.0),
       onSubmitted: (query) {
         setState(() {
-          _searchText = query;
+          _search["text"] = query;
         });
-
-        _loadOffers();
       },
     );
   }
 
-  @override
-  initState() {
-    super.initState();
-    _loadOffers();
-    _loadFilterData();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ModalProgressHUD(
-      inAsyncCall: _loading,
-      child: Scaffold(
-        key: _scaffoldKey,
-        endDrawer: _filterDrawer(context),
-        appBar: AppBar(
-          title: _searchField(context),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          actions: [
-            IconButton(
-                icon: Icon(Icons.filter_alt),
-                onPressed: () {
-                  _scaffoldKey.currentState.openEndDrawer();
-                },
-            ),
-          ],
-        ),
-        body: ListView(
-          children: [
-            if(_loading == false)
-              _offers == null ?
-              ListTile(
+  Widget buildBody(BuildContext context, Map search) {
+    return FutureBuilder<List<Offer>>(
+      future: _offerService.searchOffers(search),
+      builder: (BuildContext context, AsyncSnapshot<List<Offer>> snapshot) {
+        if(snapshot.hasData) {
+          if(snapshot.data == null || snapshot.data.length == 0) {
+            return Align(
+              alignment: Alignment.center,
+              child: ListTile(
                   title: Text("Keine Angebote gefunden", style: TextStyle(fontSize: 20)),
                   subtitle: Text("Es wurden keine Angebote gefunden oder der Server ist nicht erreichbar."),
                   leading: Icon(Icons.cancel)
               )
-              :
-              Align(
-                alignment: Alignment.center,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'Gefundene Angebote',
-                    style: TextStyle(fontSize: 25),
+            );
+          } else {
+
+            if(_search["order"] == "descPrice") {
+              snapshot.data.sort((a, b) => -a.price.compareTo(b.price));
+            } else if (_search["order"] == "ascPrice") {
+              snapshot.data.sort((a, b) => a.price.compareTo(b.price));
+            }
+
+            return ListView(
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'Gefundene Angebote',
+                      style: TextStyle(fontSize: 25),
+                    ),
                   ),
                 ),
-              ),
-              ListView.builder(
-                  itemCount: _offers == null ? 0 : _offers.length,
+                ListView.builder(
+                  itemCount: snapshot.data == null ? 0 : snapshot.data.length,
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    return createOfferCard(context, _offers[index]);
+                    return createOfferCard(context, snapshot.data[index]);
                   }
-              ),
-          ],
-        ),
-        onEndDrawerChanged: (isOpen) {
-          if(isOpen == false) {
-            _loadOffers();
+                ),
+              ],
+            );
           }
-        },
+        } else {
+          return Align(
+            alignment: Alignment.center,
+            child: snapshot.hasError ?
+            Text(snapshot.error.toString(), style: TextStyle(fontSize: 20)) :
+            CircularProgressIndicator()
+          );
+        }
+      }
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      _order.add(DropdownMenuItem(child: Text("Preis absteigend"), value: "descPrice"));
+      _order.add(DropdownMenuItem(child: Text("Preis aufsteigend"), value: "ascPrice"));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      endDrawer: buildDrawer(context),
+      appBar: AppBar(
+        title: buildSearchField(context),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.filter_alt),
+            onPressed: () {
+              _scaffoldKey.currentState.openEndDrawer();
+            },
+          ),
+        ],
       ),
+      body: buildBody(context, _search)
     );
   }
 }
