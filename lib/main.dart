@@ -12,6 +12,7 @@ import 'package:frontend_mobile/screens/profile.dart';
 import 'package:frontend_mobile/screens/register.dart';
 import 'package:frontend_mobile/screens/search_offers.dart';
 import 'package:frontend_mobile/screens/view_offer.dart';
+import 'package:frontend_mobile/screens/watchlist.dart';
 import 'package:frontend_mobile/services/http_service.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/stores/global_state.dart';
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
             '/searchOffers': (context) => SearchOffer(),
             '/chats': (context) => Chats(),
             '/chat': (context) => ChatScreen(),
+            '/watchlist': (context) => Watchlist(),
           },
         )
       )

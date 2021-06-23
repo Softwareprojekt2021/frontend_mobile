@@ -58,6 +58,14 @@ class _SideBarState extends State<SideBar> {
             },
           ),
           ListTile(
+            title: Text("Watchlist"),
+            trailing: Icon(Icons.bookmark),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, "/watchlist");
+            },
+          ),
+          ListTile(
             title: Text("Meine Chats"),
             trailing: Icon(Icons.chat),
             onTap: () {
