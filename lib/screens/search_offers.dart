@@ -161,6 +161,7 @@ class _SearchOfferState extends State<SearchOffer> {
                     _search["type"] = value;
                     _search["priceEnd"] = null;
                     _search["priceBegin"] = null;
+                    _search["order"] = null;
                   });
                 },
                 groupValue: _search["type"],
@@ -205,20 +206,23 @@ class _SearchOfferState extends State<SearchOffer> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5, bottom: 5, left: 16, right: 16),
-            child: DropdownButtonFormField(
-              decoration: InputDecoration(
-                icon: Icon(Icons.reorder),
-                labelText: "Sortieren nach"
-              ),
-              items: _order,
-              value: _search["order"],
-              onChanged: (value) {
-                setState(() {
-                  _search["order"] = value;
-                });
-              }),
+          Visibility(
+            visible: _search["type"] == 1 ? true : false,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 5, bottom: 5, left: 16, right: 16),
+              child: DropdownButtonFormField(
+                decoration: InputDecoration(
+                  icon: Icon(Icons.reorder),
+                  labelText: "Sortieren nach"
+                ),
+                items: _order,
+                value: _search["order"],
+                onChanged: (value) {
+                  setState(() {
+                    _search["order"] = value;
+                  });
+                }),
+            ),
           ),
         ],
       )
@@ -259,9 +263,9 @@ class _SearchOfferState extends State<SearchOffer> {
             );
           } else {
 
-            if(_search["order"] == "descPrice") {
+            if(_search["order"] == "descPrice" && _search["type"] == 1) {
               snapshot.data.sort((a, b) => -a.price.compareTo(b.price));
-            } else if (_search["order"] == "ascPrice") {
+            } else if (_search["order"] == "ascPrice" && _search["type"] == 1) {
               snapshot.data.sort((a, b) => a.price.compareTo(b.price));
             }
 
