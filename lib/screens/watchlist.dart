@@ -20,7 +20,7 @@ class _WatchlistState extends State<Watchlist> {
   final _watchlistService = WatchlistService();
   bool _inAsyncCall = false;
 
-  void _showDeleteDialog(List<Offer> offers, int index) {
+  void _showDeleteDialog(Offer offer) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -37,11 +37,7 @@ class _WatchlistState extends State<Watchlist> {
                 });
 
                 try {
-                  await _watchlistService.deleteOffer(offers[index].id);
-
-                  setState(() {
-                    offers.remove(offers[index]);
-                  });
+                  await _watchlistService.deleteOffer(offer.id);
 
                   NotificationOverlay.success("Angebot entfernt");
                 } catch (error) {
@@ -63,15 +59,15 @@ class _WatchlistState extends State<Watchlist> {
     );
   }
 
-  Widget createWatchlistCard(BuildContext context, List<Offer> offers, int index) {
+  Widget createWatchlistCard(BuildContext context, Offer offer) {
     return Card(
         child: Column(
           children: [
             ListTile(
-                title: Text(offers[index].title, style: TextStyle(fontSize: 20)),
-                subtitle: offers[index].compensationType == "Bar"
-                    ? Text("Preis: " + euro.format(offers[index].price), style: TextStyle(fontSize: 16))
-                    : Text(offers[index].compensationType, style: TextStyle(fontSize: 16)),
+                title: Text(offer.title, style: TextStyle(fontSize: 20)),
+                subtitle: offer.compensationType == "Bar"
+                    ? Text("Preis: " + euro.format(offer.price), style: TextStyle(fontSize: 16))
+                    : Text(offer.compensationType, style: TextStyle(fontSize: 16)),
                 leading: Icon(Icons.local_offer),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -79,7 +75,7 @@ class _WatchlistState extends State<Watchlist> {
                     IconButton(
                       icon: Icon(Icons.delete, color: Colors.blue),
                       onPressed: () {
-                        _showDeleteDialog(offers, index);
+                        _showDeleteDialog(offer);
                       },
                     ),
                     IconButton(
@@ -88,7 +84,7 @@ class _WatchlistState extends State<Watchlist> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ViewOffer(offerId: offers[index].id)
+                                builder: (context) => ViewOffer(offerId: offer.id)
                             )
                         );
                       },
@@ -96,7 +92,7 @@ class _WatchlistState extends State<Watchlist> {
                   ],
                 ),
               ),
-            Image.memory(Base64Codec().decode(offers[index].pictures[0])),
+            Image.memory(Base64Codec().decode(offer.pictures[0])),
           ],
         )
     );
@@ -120,7 +116,7 @@ class _WatchlistState extends State<Watchlist> {
                 itemCount: snapshot.data == null ? 0 : snapshot.data.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  return createWatchlistCard(context, snapshot.data, index);
+                  return createWatchlistCard(context, snapshot.data[index]);
                 });
           }
         } else {

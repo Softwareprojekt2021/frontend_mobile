@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/models/offer.dart';
 import 'package:frontend_mobile/services/offer_service.dart';
+import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/services/watchlist_service.dart';
 import 'package:frontend_mobile/util/notification.dart';
 import 'package:intl/intl.dart';
@@ -68,14 +69,14 @@ class _ViewOfferState extends State<ViewOffer> {
       title: Text("Angebot"),
       centerTitle: true,
       actions: [
-        if(offer != null && offer.sold == false)
+        if(offer != null && offer.sold == false && StoreService.store.state.user != null)
         IconButton(
           icon: Icon(Icons.bookmark),
           onPressed: () {
             _addBookmarkDialog(offer.id);
           }
         ),
-        if(offer != null && offer.sold == false)
+        if(offer != null && offer.sold == false && StoreService.store.state.user != null)
         IconButton(
           icon: Icon(Icons.message),
           onPressed: () {

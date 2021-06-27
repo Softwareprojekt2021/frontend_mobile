@@ -62,6 +62,11 @@ class _EditOffer extends State<EditOffer> {
   Future<void> _updateOffer() async {
     FocusScope.of(context).unfocus();
 
+    if(_offer.pictures == null || _offer.pictures.length == 0) {
+      NotificationOverlay.error("Es muss mindestens ein Bild vorhanden sein");
+      return;
+    }
+
     try {
       setState(() {
         _loading = true;

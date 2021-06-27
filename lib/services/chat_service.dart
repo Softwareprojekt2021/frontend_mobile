@@ -61,6 +61,10 @@ class ChatService {
     try {
       final response = await HttpService.client.get(AppUrl.messages);
 
+      if(response.statusCode == 204) {
+        return <Chat>[];
+      }
+
       return response.data.map((chat) => Chat.fromJson(chat)).toList().cast<Chat>();
     } on DioError catch (error) {
       if(error.type == DioErrorType.connectTimeout) {

@@ -47,6 +47,11 @@ class _CreateOffer extends State<CreateOffer> {
     //Closes Keyboard
     FocusScope.of(context).unfocus();
 
+    if(_offer.pictures == null || _offer.pictures.length == 0) {
+      NotificationOverlay.error("Es muss mindestens ein Bild vorhanden sein");
+      return;
+    }
+
     if (form.validate()) {
       form.save();
 
