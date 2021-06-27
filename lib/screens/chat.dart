@@ -39,7 +39,7 @@ class _CreatedChatScreen extends State<ChatScreen> {
 
   Future<void> _deleteMessage(Chat chat, Message message) async {
     try {
-      await _chatService.deleteMessage(message.id);
+      await _chatService.deleteMessage(chat.id, message.id);
 
       setState(() {
         chat.messages.remove(message);
@@ -61,7 +61,7 @@ class _CreatedChatScreen extends State<ChatScreen> {
           offerId: chat.offerId);
 
       try {
-        await _chatService.sendMessage(message);
+        await _chatService.sendMessage(chat.id, message);
 
         if(chat.messages == null) {
           chat.messages = [];

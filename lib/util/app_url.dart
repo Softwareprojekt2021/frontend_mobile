@@ -10,5 +10,6 @@ class AppUrl {
   static const String universities = baseURL + "/universities";
   static const String categories = baseURL + "/categories";
   static const String messages = baseURL + "/messages";
-  static const String message = baseURL + "/messages";
+  static const String message = baseURL + "/message";
+  static const String watchlist = baseURL + "/watchlist";
 }

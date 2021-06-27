@@ -89,6 +89,10 @@ class OfferService {
     try {
       final response = await HttpService.client.get(AppUrl.offers);
 
+      if(response.statusCode == 204) {
+        return <Offer>[];
+      }
+
       return response.data.map((offer) => Offer.fromJson(offer)).toList().cast<Offer>();
     } on DioError catch (error) {
       if(error.type == DioErrorType.connectTimeout) {
@@ -104,6 +108,10 @@ class OfferService {
   Future<List<Offer>> fetchRecommendedOffers() async {
     try {
       final response = await HttpService.client.get(AppUrl.recommended);
+
+      if(response.statusCode == 204) {
+        return <Offer>[];
+      }
 
       return response.data.map((offer) => Offer.fromJson(offer)).toList().cast<Offer>();
     } on DioError catch (error) {
@@ -127,6 +135,10 @@ class OfferService {
         if(search["priceEnd"] != null) "max_price": search["priceEnd"],
         if(search["priceBegin"] != null) "min_price": search["priceBegin"]
       });
+
+      if(response.statusCode == 204) {
+        return <Offer>[];
+      }
 
       return response.data.map((offer) => Offer.fromJson(offer)).toList().cast<Offer>();
     } on DioError catch (error) {
