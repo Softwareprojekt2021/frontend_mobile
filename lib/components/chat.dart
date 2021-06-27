@@ -9,9 +9,9 @@ Widget createChatCard(BuildContext context, Chat chat) {
       child: Column(
         children: [
           ListTile(
-            title: Text(chat.title),
-            subtitle: Text(chat.user.firstName + " " + chat.user.lastName),
-            leading: chat.picture == null
+            title: Text(chat.offer.title),
+            subtitle: Text(chat.offer.user.firstName + " " + chat.offer.user.lastName),
+            leading: chat.offer.pictures == null
                 ? CircleAvatar(
                 child: Icon(
                     Icons.image,
@@ -19,7 +19,7 @@ Widget createChatCard(BuildContext context, Chat chat) {
             )
                 : CircleAvatar(
               backgroundImage: Image.memory(
-                  Base64Codec().decode(chat.picture)).image,
+                  Base64Codec().decode(chat.offer.pictures[0])).image,
             ),
             trailing: IconButton(
               icon: Icon(Icons.message, color: Colors.blue),

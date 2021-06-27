@@ -58,7 +58,7 @@ class _CreatedChatScreen extends State<ChatScreen> {
           message: textEditingController.text,
           userId: StoreService.store.state.user.id,
           timestamp: DateTime.now().toString().split(".")[0],
-          offerId: chat.offerId);
+          offerId: chat.offer.id);
 
       try {
         await _chatService.sendMessage(chat.id, message);
@@ -278,7 +278,7 @@ class _CreatedChatScreen extends State<ChatScreen> {
       builder: (BuildContext context, AsyncSnapshot<Chat> snapshot) {
         return Scaffold(
             appBar: AppBar(
-              title: snapshot.data == null ? Text("Chat") : Text(snapshot.data.title),
+              title: snapshot.data == null ? Text("Chat") : Text(snapshot.data.offer.title),
               actions: [
                 IconButton(
                   onPressed: () {

@@ -7,11 +7,11 @@ import 'package:frontend_mobile/services/http_service.dart';
 import 'package:frontend_mobile/util/app_url.dart';
 
 class ChatService {
-  Future<Chat> createChat(int offerId) async {
+  Future<int> createChat(int offerId) async {
     try {
       final response = await HttpService.client.post(AppUrl.message + "/" + offerId.toString() + "/create");
 
-      return await fetchChat(jsonDecode(response.data)['chat_id']);
+      return jsonDecode(response.data)['chat_id'];
     } on DioError catch (error) {
       if(error.type == DioErrorType.connectTimeout) {
         throw("Server ist nicht erreichbar");

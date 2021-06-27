@@ -1,14 +1,16 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/models/offer.dart';
+import 'package:frontend_mobile/services/chat_service.dart';
 import 'package:frontend_mobile/services/offer_service.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/services/watchlist_service.dart';
 import 'package:frontend_mobile/util/notification.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+
+import 'chat.dart';
 
 class ViewOffer extends StatefulWidget {
   final int offerId;
@@ -23,6 +25,7 @@ class ViewOffer extends StatefulWidget {
 class _ViewOfferState extends State<ViewOffer> {
   final _offerService = OfferService();
   final _watchlistService = WatchlistService();
+  final _chatService = ChatService();
   var euro = NumberFormat.currency(symbol: "€", locale: "de_DE");
   bool _inAsyncCall = false;
   Future myFuture;
@@ -70,18 +73,43 @@ class _ViewOfferState extends State<ViewOffer> {
       title: Text("Angebot"),
       centerTitle: true,
       actions: [
-        if(offer != null && offer.sold == false && StoreService.store.state.user != null)
+        if(offer != null
+            && offer.sold == false
+            && StoreService.store.state.user != null
+            && StoreService.store.state.user.id != offer.user.id)
         IconButton(
           icon: Icon(Icons.bookmark),
           onPressed: () {
             _addBookmarkDialog(offer.id);
           }
         ),
-        if(offer != null && offer.sold == false && StoreService.store.state.user != null)
+        if(offer != null
+            && offer.sold == false
+            && StoreService.store.state.user != null
+            && StoreService.store.state.user.id != offer.user.id)
         IconButton(
           icon: Icon(Icons.message),
-          onPressed: () {
+          onPressed: () async {
+            setState(() {
+              _inAsyncCall = true;
+            });
 
+            try {
+              int chatId = await _chatService.createChat(offer.id);
+
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ChatScreen(chatId: chatId)
+                  )
+              );
+            } catch (error) {
+              NotificationOverlay.error(error.toString());
+            } finally {
+              setState(() {
+                _inAsyncCall = false;
+              });
+            }
           }
         ),
       ],
@@ -247,11 +275,18 @@ class _ViewOfferState extends State<ViewOffer> {
                                     style: TextStyle(fontSize: 18),
                                   ),
                                 ),
-                                Icon(Icons.star),
-                                Icon(Icons.star),
-                                Icon(Icons.star),
-                                Icon(Icons.star),
-                                Icon(Icons.star_half),
+                                snapshot.data.user.rating == 0
+                                ?
+                                  Text(
+                                    "Keine Bewertungen",
+                                    style: TextStyle(fontSize: 18),
+                                  )
+                                :
+                                  Icon(Icons.star),
+                                  Icon(Icons.star),
+                                  Icon(Icons.star),
+                                  Icon(Icons.star),
+                                  Icon(Icons.star_half),
                               ],
                             )
                           ],
