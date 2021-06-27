@@ -107,7 +107,7 @@ class _WatchlistState extends State<Watchlist> {
             return Align(
                 alignment: Alignment.center,
                 child: ListTile(
-                    title: Text("Du hasst keine Angebote in deiner Watchlist",
+                    title: Text("Du hast keine Angebote in deiner Watchlist",
                         style: TextStyle(fontSize: 20)),
                     leading: Icon(Icons.cancel))
             );

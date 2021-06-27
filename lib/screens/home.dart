@@ -14,10 +14,11 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final _offerService = OfferService();
+  Future myFuture;
 
   Widget buildBody(BuildContext context) {
     return FutureBuilder<List<Offer>>(
-        future: _offerService.fetchRecommendedOffers(),
+        future: myFuture,
         builder: (BuildContext context, AsyncSnapshot<List<Offer>> snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data == null || snapshot.data.length == 0) {
@@ -45,6 +46,12 @@ class _HomeState extends State<Home> {
                     : CircularProgressIndicator());
           }
         });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    myFuture = _offerService.fetchRecommendedOffers();
   }
 
   @override
