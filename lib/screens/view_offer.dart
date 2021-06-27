@@ -25,6 +25,7 @@ class _ViewOfferState extends State<ViewOffer> {
   final _watchlistService = WatchlistService();
   var euro = NumberFormat.currency(symbol: "€", locale: "de_DE");
   bool _inAsyncCall = false;
+  Future myFuture;
 
   void _addBookmarkDialog(int offerId) {
     showDialog(
@@ -89,7 +90,7 @@ class _ViewOfferState extends State<ViewOffer> {
 
   Widget buildOffer(BuildContext context) {
     return FutureBuilder<Offer>(
-      future: _offerService.fetchOffer(widget.offerId),
+      future: myFuture,
       builder: (BuildContext context, AsyncSnapshot<Offer> snapshot) {
         if(snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
@@ -265,6 +266,12 @@ class _ViewOfferState extends State<ViewOffer> {
         }
       }
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    myFuture = _offerService.fetchOffer(widget.offerId);
   }
 
   @override

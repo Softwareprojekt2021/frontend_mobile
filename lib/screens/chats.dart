@@ -13,10 +13,11 @@ class Chats extends StatefulWidget {
 
 class _CreatedChats extends State<Chats> {
   final _chatService = ChatService();
+  Future myFuture;
 
   Widget buildBody(BuildContext context) {
     return FutureBuilder<List<Chat>>(
-      future: _chatService.fetchChats(),
+      future: myFuture,
       builder: (BuildContext context, AsyncSnapshot<List<Chat>> snapshot) {
         if(snapshot.hasData) {
           if(snapshot.data == null || snapshot.data.length == 0) {
@@ -46,6 +47,12 @@ class _CreatedChats extends State<Chats> {
         }
       }
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    myFuture = _chatService.fetchChats();
   }
 
   @override
