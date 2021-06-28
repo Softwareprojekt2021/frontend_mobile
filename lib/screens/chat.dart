@@ -57,8 +57,7 @@ class _CreatedChatScreen extends State<ChatScreen> {
       Message message = new Message(
           message: textEditingController.text,
           userId: StoreService.store.state.user.id,
-          timestamp: DateTime.now().toString().split(".")[0],
-          offerId: chat.offer.id);
+          timestamp: DateTime.now().toString().split(".")[0]);
 
       try {
         await _chatService.sendMessage(chat.id, message);
@@ -178,13 +177,18 @@ class _CreatedChatScreen extends State<ChatScreen> {
   Widget buildBody(BuildContext context, AsyncSnapshot<Chat> snapshot) {
     if(snapshot.hasData) {
       if(snapshot.data.messages == null || snapshot.data.messages.length == 0) {
-        return Padding(
-          padding: EdgeInsets.only(
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
               top: 5, bottom: 5, left: 20, right: 20),
-          child: Bubble(
-            alignment: Alignment.center,
-            child: Text("Keine Nachrichten"),
-          ));
+              child: Bubble(
+                alignment: Alignment.topCenter,
+                child: Text("Keine Nachrichten"),
+            )),
+            buildTextBox(context, snapshot.data),
+          ],
+        );
       } else {
         return Column(
           children: [

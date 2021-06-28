@@ -79,7 +79,7 @@ class ChatService {
     try {
       final response = await HttpService.client.get(AppUrl.message + "/" + chatId.toString());
 
-      return response.data.map((chat) => Chat.fromJson(chat)).toList().cast<Chat>();
+      return Chat.fromJson(response.data);
     } on DioError catch (error) {
       if(error.type == DioErrorType.connectTimeout) {
         throw("Server ist nicht erreichbar");

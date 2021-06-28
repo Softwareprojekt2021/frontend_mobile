@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/models/chat.dart';
 import 'package:frontend_mobile/screens/chat.dart';
+import 'package:frontend_mobile/services/store_service.dart';
 
 Widget createChatCard(BuildContext context, Chat chat) {
   return Card(
@@ -10,7 +11,9 @@ Widget createChatCard(BuildContext context, Chat chat) {
         children: [
           ListTile(
             title: Text(chat.offer.title),
-            subtitle: Text(chat.offer.user.firstName + " " + chat.offer.user.lastName),
+            subtitle: chat.offer.user.id == StoreService.store.state.user.id
+                ? Text("Käufer: " + chat.user.firstName + " " + chat.user.lastName)
+                : Text("Anbieter: " + chat.offer.user.firstName + " " + chat.offer.user.lastName),
             leading: chat.offer.pictures == null
                 ? CircleAvatar(
                 child: Icon(
