@@ -23,7 +23,7 @@ class ChatService {
 
   deleteChat(int chatId) async {
     try {
-      await HttpService.client.delete(AppUrl.message + "/" + chatId.toString());
+      await HttpService.client.delete(AppUrl.messages + "/" + chatId.toString());
     } on DioError catch (error) {
       if (error.type == DioErrorType.connectTimeout) {
         throw("Server ist nicht erreichbar");
