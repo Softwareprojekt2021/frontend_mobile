@@ -1,6 +1,6 @@
 class User {
   int id;
-  int rating;
+  double rating;
   bool admin;
   String email, firstName, lastName, course, profilePicture, university, password;
 
@@ -15,7 +15,7 @@ class User {
         course = json['course'],
         profilePicture = json['profile_picture'],
         university = json['university'],
-        rating = json['average_rating'],
+        rating = json['average_rating'] is int ? double.parse(json['average_rating'].toString()) : json['average_rating'],
         admin = json['admin'];
 
   Map<String, dynamic> toJson() => {

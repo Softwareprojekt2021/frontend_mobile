@@ -6,7 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/models/chat.dart';
 import 'package:frontend_mobile/models/message.dart';
+import 'package:frontend_mobile/models/user.dart';
 import 'package:frontend_mobile/services/chat_service.dart';
+import 'package:frontend_mobile/services/rating_service.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/util/notification.dart';
 
@@ -23,6 +25,7 @@ class ChatScreen extends StatefulWidget {
 
 class _CreatedChatScreen extends State<ChatScreen> {
   final _chatService = ChatService();
+  final _ratingService = RatingService();
   final TextEditingController textEditingController = new TextEditingController();
   Stream<Chat> chatStream;
 
@@ -138,6 +141,104 @@ class _CreatedChatScreen extends State<ChatScreen> {
         await Future.delayed(interval);
       }
     }
+  }
+
+  Widget rateDialog(BuildContext context, User user) {
+    return FutureBuilder<int>(
+      future: _ratingService.fetchRating(user.id),
+      builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+        if(snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            body: Align(
+                alignment: Alignment.center,
+                child: CircularProgressIndicator()
+            ),
+          );
+        } else {
+          if (snapshot.hasError) {
+            return Scaffold(
+                body: Align(
+                    alignment: Alignment.center,
+                    child: Text(snapshot.error.toString(),
+                        style: TextStyle(fontSize: 20))
+                )
+            );
+          } else {
+            int rating = snapshot.data;
+
+            Widget buildStar(BuildContext context, setState, int index) {
+              return IconButton(
+                  onPressed: () {
+                    setState(() {
+                      rating = index;
+                    });
+                  },
+                  icon: Icon(rating >= index
+                      ? Icons.star
+                      : Icons.star_border)
+              );
+            }
+
+            return AlertDialog(
+              title: Center(
+                child: snapshot.data != 0
+                  ? Text("Bewertung ändern von\n" + user.firstName + " " + user.lastName)
+                  : Text("Bewerte " + user.firstName + " " + user.lastName),
+              ),
+              content: StatefulBuilder(
+                builder: (context, setState) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      for(int i = 1; i < 6; i++) buildStar(context, setState, i)
+                    ],
+                  );
+                }
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Abbrechen'),
+                  onPressed: () => Navigator.pop(context, false),
+                ),
+                if(snapshot.data != 0)
+                  TextButton(
+                    child: Text('Löschen'),
+                    onPressed: () async {
+                      try {
+                        await _ratingService.deleteRating(user.id);
+
+                        NotificationOverlay.success("Bewertung gelöscht");
+                        Navigator.pop(context, true);
+                      } catch(error) {
+                        NotificationOverlay.error(error.toString());
+                      }
+                    }
+                  ),
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () async {
+                    if (rating == 0) {
+                      NotificationOverlay.error(
+                          "Du musst mindestens einen Stern vergeben");
+                    } else {
+                      try {
+                        snapshot.data == 0
+                            ? await _ratingService.rateSeller(user.id, rating)
+                            : await _ratingService.updateRating(user.id, rating);
+
+                        NotificationOverlay.success("Bewertung abgeschickt");
+                        Navigator.pop(context, true);
+                      } catch (error) {
+                        NotificationOverlay.error(error.toString());
+                      }
+                    }
+                  },
+                ),
+              ],
+            );
+          }
+        }
+    });
   }
 
   Widget buildTextBox(BuildContext context, Chat chat) {
@@ -269,7 +370,10 @@ class _CreatedChatScreen extends State<ChatScreen> {
             content: Text(snapshot.error.toString())
         );
       } else {
-        return CircularProgressIndicator();
+        return Align(
+          alignment: Alignment.center,
+          child: CircularProgressIndicator()
+        );
       }
     }
   }
@@ -296,7 +400,17 @@ class _CreatedChatScreen extends State<ChatScreen> {
                   icon: Icon(Icons.delete),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    if(snapshot.data != null)
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return rateDialog(context, StoreService.store.state.user.id == snapshot.data.user.id
+                                ? snapshot.data.offer.user
+                                : snapshot.data.user);
+                          }
+                      );
+                  },
                   icon: Icon(Icons.star_border),
                 ),
               ],

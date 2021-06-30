@@ -116,6 +116,31 @@ class _ViewOfferState extends State<ViewOffer> {
     );
   }
 
+  List<Widget> buildRating(BuildContext context, double rating) {
+    List<Widget> widgets = <Widget>[];
+    double missing = 5 - rating;
+
+    if(rating == 0) {
+      widgets.add(Text("Keine", style: TextStyle(fontSize: 18)));
+
+      return widgets;
+    }
+
+    for(int index = 0; index < rating.ceil(); index++) {
+      if(index < rating.ceil() && rating % rating.floor() > 0.5) {
+        widgets.add(Icon(Icons.star_half));
+      } else {
+        widgets.add(Icon(Icons.star));
+      }
+    }
+
+    for(int index = 0; index < missing.floor(); index++) {
+      widgets.add(Icon(Icons.star_border));
+    }
+
+    return widgets;
+  }
+
   Widget buildOffer(BuildContext context) {
     return FutureBuilder<Offer>(
       future: myFuture,
@@ -260,14 +285,14 @@ class _ViewOfferState extends State<ViewOffer> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
                                   child: Text(
-                                    snapshot.data.user.firstName + " " + snapshot.data.user.lastName,
+                                    "Name: " + snapshot.data.user.firstName + " " + snapshot.data.user.lastName,
                                     style: TextStyle(fontSize: 18),
                                   ),
                                 ),
                               ],
                             ),
                             Row(
-                              children: [
+                              children: <Widget>[
                                 Padding(
                                   padding: const EdgeInsets.only(right: 10.0),
                                   child: Text(
@@ -275,18 +300,7 @@ class _ViewOfferState extends State<ViewOffer> {
                                     style: TextStyle(fontSize: 18),
                                   ),
                                 ),
-                                snapshot.data.user.rating == 0
-                                ?
-                                  Text(
-                                    "Keine Bewertungen",
-                                    style: TextStyle(fontSize: 18),
-                                  )
-                                :
-                                  Icon(Icons.star),
-                                  Icon(Icons.star),
-                                  Icon(Icons.star),
-                                  Icon(Icons.star),
-                                  Icon(Icons.star_half),
+                                ...buildRating(context, snapshot.data.user.rating)
                               ],
                             )
                           ],
