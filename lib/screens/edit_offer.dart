@@ -184,7 +184,7 @@ class _EditOffer extends State<EditOffer> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text("Angebot als verkauft markieren"),
-            content: Text("Willst du wirklich das Angebot als verkauft markieren?"),
+            content: Text("Das Angebot wird als verkauft markiert, es kann nicht mehr geändert oder gelöscht werden."),
             actions: [
               TextButton(
                 child: Text("OK"),
@@ -416,20 +416,6 @@ class _EditOffer extends State<EditOffer> {
               child: Text("Änderungen speichern"),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-            child: ElevatedButton(
-              onPressed: _showSellDialog,
-              child: Text("Als verkauft markieren"),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-            child: ElevatedButton(
-              onPressed: _showDeleteDialog,
-              child: Text("Angebot löschen"),
-            ),
-          ),
         ],
       ),
     );
@@ -461,8 +447,20 @@ class _EditOffer extends State<EditOffer> {
       inAsyncCall: _loading,
       child: Scaffold(
           appBar: AppBar(
-            title: Text("Angebot erstellen"),
+            title: Text("Angebot editieren"),
             centerTitle: true,
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    _showSellDialog();
+                  }, icon: Icon(Icons.money_off)
+              ),
+              IconButton(
+                  onPressed: () {
+                    _showDeleteDialog();
+                  }, icon: Icon(Icons.delete)
+              ),
+            ],
           ),
           body: _offer == null
             ? Align(
