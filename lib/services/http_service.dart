@@ -19,6 +19,6 @@ class HttpService {
   }
 
   static removeAuthHeader() async {
-    client.options.headers['Authorization'] = null;
+    client.options.headers.remove('Authorization');
   }
 }

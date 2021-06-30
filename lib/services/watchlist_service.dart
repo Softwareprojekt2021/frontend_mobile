@@ -5,9 +5,12 @@ import 'package:frontend_mobile/util/app_url.dart';
 
 class WatchlistService {
   Future<List<Offer>> fetchOffers() async {
-    //TODO Backend
     try {
-      final response = await HttpService.client.get(AppUrl.offers);
+      final response = await HttpService.client.get(AppUrl.watchlist);
+
+      if(response.statusCode == 204) {
+        return <Offer>[];
+      }
 
       return response.data.map((offer) => Offer.fromJson(offer)).toList().cast<Offer>();
     } on DioError catch (error) {
@@ -22,16 +25,26 @@ class WatchlistService {
   }
 
   Future<void> deleteOffer(int offerId) async {
-    //TODO Backend
-
-    await Future.delayed(Duration(seconds: 2));
-    return;
+    try {
+      await HttpService.client.delete(AppUrl.watchlist + "/" + offerId.toString());
+    } on DioError catch (error) {
+      if(error.type == DioErrorType.connectTimeout) {
+        throw("Server ist nicht erreichbar");
+      } else {
+        throw(error);
+      }
+    }
   }
 
   Future<void> addOffer(int offerId) async {
-    //TODO Backend
-
-    await Future.delayed(Duration(seconds: 2));
-    return;
+    try {
+      await HttpService.client.post(AppUrl.watchlist + "/" + offerId.toString());
+    } on DioError catch (error) {
+      if(error.type == DioErrorType.connectTimeout) {
+        throw("Server ist nicht erreichbar");
+      } else {
+        throw(error);
+      }
+    }
   }
 }

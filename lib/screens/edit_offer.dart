@@ -28,6 +28,7 @@ class _EditOffer extends State<EditOffer> {
   Offer _offer;
   bool _loading = false;
   int _showPrice;
+  Future myFuture;
 
   var priceFormat = MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.', rightSymbol: '€');
   var _textControllerTitle = TextEditingController();
@@ -61,6 +62,11 @@ class _EditOffer extends State<EditOffer> {
 
   Future<void> _updateOffer() async {
     FocusScope.of(context).unfocus();
+
+    if(_offer.pictures == null || _offer.pictures.length == 0) {
+      NotificationOverlay.error("Es muss mindestens ein Bild vorhanden sein");
+      return;
+    }
 
     try {
       setState(() {
@@ -179,7 +185,7 @@ class _EditOffer extends State<EditOffer> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text("Angebot als verkauft markieren"),
-            content: Text("Willst du wirklich das Angebot als verkauft markieren?"),
+            content: Text("Das Angebot wird als verkauft markiert, es kann nicht mehr geändert oder gelöscht werden."),
             actions: [
               TextButton(
                 child: Text("OK"),
@@ -262,7 +268,7 @@ class _EditOffer extends State<EditOffer> {
 
   Widget buildDropdownCategory(BuildContext context) {
     return FutureBuilder<List<String>>(
-        future: _offerService.fetchCategories(),
+        future: myFuture,
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
           if(snapshot.hasData) {
             var list = <DropdownMenuItem>[];
@@ -411,20 +417,6 @@ class _EditOffer extends State<EditOffer> {
               child: Text("Änderungen speichern"),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-            child: ElevatedButton(
-              onPressed: _showSellDialog,
-              child: Text("Als verkauft markieren"),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-            child: ElevatedButton(
-              onPressed: _showDeleteDialog,
-              child: Text("Angebot löschen"),
-            ),
-          ),
         ],
       ),
     );
@@ -439,6 +431,7 @@ class _EditOffer extends State<EditOffer> {
     });
 
     try {
+      myFuture = _offerService.fetchCategories();
       _fetchOffer();
     } catch (error) {
       NotificationOverlay.error(error.toString());
@@ -456,8 +449,20 @@ class _EditOffer extends State<EditOffer> {
       inAsyncCall: _loading,
       child: Scaffold(
           appBar: AppBar(
-            title: Text("Angebot erstellen"),
+            title: Text("Angebot editieren"),
             centerTitle: true,
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    _showSellDialog();
+                  }, icon: Icon(Icons.money_off)
+              ),
+              IconButton(
+                  onPressed: () {
+                    _showDeleteDialog();
+                  }, icon: Icon(Icons.delete)
+              ),
+            ],
           ),
           body: _offer == null
             ? Align(

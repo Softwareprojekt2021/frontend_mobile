@@ -14,6 +14,10 @@ class LoginService {
     try {
       final response = await HttpService.client.post(AppUrl.login, data: json.encode(loginData));
 
+      if(response.statusCode == 204) {
+        throw("Anmeldeinformationen sind falsch");
+      }
+
       return response.data;
     } on DioError catch (error) {
       if(error.type == DioErrorType.connectTimeout) {

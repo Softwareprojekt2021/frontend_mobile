@@ -33,12 +33,16 @@ class _ProfileState extends State<Profile> {
   var _universities = <DropdownMenuItem>[];
 
   Future <void> _loadUniversities() async {
-    List<String> _fetchedUniversities = await _userService.fetchUniversities();
+    try {
+      List<String> _fetchedUniversities = await _userService.fetchUniversities();
 
-    for (String university in _fetchedUniversities) {
-      setState(() {
-        _universities.add(DropdownMenuItem(child: Text(university), value: university));
-      });
+      for (String university in _fetchedUniversities) {
+        setState(() {
+          _universities.add(DropdownMenuItem(child: Text(university), value: university));
+        });
+      }
+    } catch(error) {
+      NotificationOverlay.error("Unis/FHs können nicht geladen werden: " + error.toString());
     }
   }
 
@@ -146,6 +150,14 @@ class _ProfileState extends State<Profile> {
       appBar: AppBar(
         title: Text("Dein Profil"),
         centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () {
+                _showDeleteDialog();
+              },
+              icon: Icon(Icons.delete)
+          ),
+        ],
       ),
       body: Form(
             key: formKey,
@@ -302,13 +314,6 @@ class _ProfileState extends State<Profile> {
                   child: ElevatedButton(
                     onPressed: save,
                     child: Text("Änderungen speichern"),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-                  child: ElevatedButton(
-                    onPressed: _showDeleteDialog,
-                    child: Text("Profil löschen"),
                   ),
                 ),
               ],

@@ -1,13 +1,16 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/models/offer.dart';
+import 'package:frontend_mobile/services/chat_service.dart';
 import 'package:frontend_mobile/services/offer_service.dart';
+import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/services/watchlist_service.dart';
 import 'package:frontend_mobile/util/notification.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+
+import 'chat.dart';
 
 class ViewOffer extends StatefulWidget {
   final int offerId;
@@ -22,8 +25,10 @@ class ViewOffer extends StatefulWidget {
 class _ViewOfferState extends State<ViewOffer> {
   final _offerService = OfferService();
   final _watchlistService = WatchlistService();
+  final _chatService = ChatService();
   var euro = NumberFormat.currency(symbol: "€", locale: "de_DE");
   bool _inAsyncCall = false;
+  Future myFuture;
 
   void _addBookmarkDialog(int offerId) {
     showDialog(
@@ -68,27 +73,77 @@ class _ViewOfferState extends State<ViewOffer> {
       title: Text("Angebot"),
       centerTitle: true,
       actions: [
-        if(offer != null && offer.sold == false)
+        if(offer != null
+            && offer.sold == false
+            && StoreService.store.state.user != null
+            && StoreService.store.state.user.id != offer.user.id)
         IconButton(
           icon: Icon(Icons.bookmark),
           onPressed: () {
             _addBookmarkDialog(offer.id);
           }
         ),
-        if(offer != null && offer.sold == false)
+        if(offer != null
+            && offer.sold == false
+            && StoreService.store.state.user != null
+            && StoreService.store.state.user.id != offer.user.id)
         IconButton(
           icon: Icon(Icons.message),
-          onPressed: () {
+          onPressed: () async {
+            setState(() {
+              _inAsyncCall = true;
+            });
 
+            try {
+              int chatId = await _chatService.createChat(offer.id);
+
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ChatScreen(chatId: chatId)
+                  )
+              );
+            } catch (error) {
+              NotificationOverlay.error(error.toString());
+            } finally {
+              setState(() {
+                _inAsyncCall = false;
+              });
+            }
           }
         ),
       ],
     );
   }
 
+  List<Widget> buildRating(BuildContext context, double rating) {
+    List<Widget> widgets = <Widget>[];
+    double missing = 5 - rating;
+
+    if(rating == 0) {
+      widgets.add(Text("Keine", style: TextStyle(fontSize: 18)));
+
+      return widgets;
+    }
+
+    for(int index = 0; index < rating.ceil(); index++) {
+      if(index < rating.ceil() && rating % rating.floor() > 0.5) {
+        widgets.add(Icon(Icons.star_half));
+      } else {
+        widgets.add(Icon(Icons.star));
+      }
+    }
+
+    for(int index = 0; index < missing.floor(); index++) {
+      widgets.add(Icon(Icons.star_border));
+    }
+
+    return widgets;
+  }
+
   Widget buildOffer(BuildContext context) {
     return FutureBuilder<Offer>(
-      future: _offerService.fetchOffer(widget.offerId),
+      future: myFuture,
       builder: (BuildContext context, AsyncSnapshot<Offer> snapshot) {
         if(snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
@@ -119,8 +174,8 @@ class _ViewOfferState extends State<ViewOffer> {
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Text(
-                            "Achtung: Das Angebot wurde schon verkauft!",
-                            style: TextStyle(fontSize: 25),
+                            "Achtung: Das Angebot wurde verkauft!",
+                            style: TextStyle(fontSize: 25, color: Colors.deepOrangeAccent),
                           ),
                         ),
                       ),
@@ -230,14 +285,14 @@ class _ViewOfferState extends State<ViewOffer> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
                                   child: Text(
-                                    snapshot.data.user.firstName + " " + snapshot.data.user.lastName,
+                                    "Name: " + snapshot.data.user.firstName + " " + snapshot.data.user.lastName,
                                     style: TextStyle(fontSize: 18),
                                   ),
                                 ),
                               ],
                             ),
                             Row(
-                              children: [
+                              children: <Widget>[
                                 Padding(
                                   padding: const EdgeInsets.only(right: 10.0),
                                   child: Text(
@@ -245,11 +300,7 @@ class _ViewOfferState extends State<ViewOffer> {
                                     style: TextStyle(fontSize: 18),
                                   ),
                                 ),
-                                Icon(Icons.star),
-                                Icon(Icons.star),
-                                Icon(Icons.star),
-                                Icon(Icons.star),
-                                Icon(Icons.star_half),
+                                ...buildRating(context, snapshot.data.user.rating)
                               ],
                             )
                           ],
@@ -264,6 +315,12 @@ class _ViewOfferState extends State<ViewOffer> {
         }
       }
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    myFuture = _offerService.fetchOffer(widget.offerId);
   }
 
   @override
