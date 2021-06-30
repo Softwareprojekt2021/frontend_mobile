@@ -28,6 +28,7 @@ class _EditOffer extends State<EditOffer> {
   Offer _offer;
   bool _loading = false;
   int _showPrice;
+  Future myFuture;
 
   var priceFormat = MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.', rightSymbol: '€');
   var _textControllerTitle = TextEditingController();
@@ -267,7 +268,7 @@ class _EditOffer extends State<EditOffer> {
 
   Widget buildDropdownCategory(BuildContext context) {
     return FutureBuilder<List<String>>(
-        future: _offerService.fetchCategories(),
+        future: myFuture,
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
           if(snapshot.hasData) {
             var list = <DropdownMenuItem>[];
@@ -430,6 +431,7 @@ class _EditOffer extends State<EditOffer> {
     });
 
     try {
+      myFuture = _offerService.fetchCategories();
       _fetchOffer();
     } catch (error) {
       NotificationOverlay.error(error.toString());
