@@ -132,9 +132,10 @@ class _CreatedChatScreen extends State<ChatScreen> {
       log(DateTime.now().toString() + " Refreshing Chat..");
       try {
         yield await _chatService.fetchChat(widget.chatId);
-        await Future.delayed(interval);
       } catch (error) {
-        NotificationOverlay.error(error);
+        NotificationOverlay.error("Neue Nachrichten können nicht geladen werden: " + error.toString());
+      } finally {
+        await Future.delayed(interval);
       }
     }
   }
