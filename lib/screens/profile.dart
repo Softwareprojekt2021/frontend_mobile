@@ -150,6 +150,14 @@ class _ProfileState extends State<Profile> {
       appBar: AppBar(
         title: Text("Dein Profil"),
         centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () {
+                _showDeleteDialog();
+              },
+              icon: Icon(Icons.delete)
+          ),
+        ],
       ),
       body: Form(
             key: formKey,
@@ -306,13 +314,6 @@ class _ProfileState extends State<Profile> {
                   child: ElevatedButton(
                     onPressed: save,
                     child: Text("Änderungen speichern"),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-                  child: ElevatedButton(
-                    onPressed: _showDeleteDialog,
-                    child: Text("Profil löschen"),
                   ),
                 ),
               ],
