@@ -12,4 +12,5 @@ class AppUrl {
   static const String messages = baseURL + "/messages";
   static const String message = baseURL + "/message";
   static const String watchlist = baseURL + "/watchlist";
+  static const String rating = baseURL + "/rating";
 }

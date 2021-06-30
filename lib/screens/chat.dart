@@ -130,8 +130,12 @@ class _CreatedChatScreen extends State<ChatScreen> {
   Stream<Chat> _refreshChat(Duration interval) async* {
     while (true) {
       log(DateTime.now().toString() + " Refreshing Chat..");
-      yield await _chatService.fetchChat(widget.chatId);
-      await Future.delayed(interval);
+      try {
+        yield await _chatService.fetchChat(widget.chatId);
+        await Future.delayed(interval);
+      } catch (error) {
+        NotificationOverlay.error(error);
+      }
     }
   }
 

@@ -32,12 +32,16 @@ class _CreateOffer extends State<CreateOffer> {
   var _textControllerDescription = TextEditingController();
 
   Future<void> _loadCategories() async {
-    List<String> _fetchedCategories = await _offerService.fetchCategories();
+    try {
+      List<String> _fetchedCategories = await _offerService.fetchCategories();
 
-    for (String category in _fetchedCategories) {
-      setState(() {
-        _categories.add(DropdownMenuItem(child: Text(category), value: category));
-      });
+      for (String category in _fetchedCategories) {
+        setState(() {
+          _categories.add(DropdownMenuItem(child: Text(category), value: category));
+        });
+      }
+    } catch(error) {
+      NotificationOverlay.error("Kategorien können nicht geladen werden: " + error.toString());
     }
   }
 

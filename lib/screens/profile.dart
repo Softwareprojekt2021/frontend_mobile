@@ -33,12 +33,16 @@ class _ProfileState extends State<Profile> {
   var _universities = <DropdownMenuItem>[];
 
   Future <void> _loadUniversities() async {
-    List<String> _fetchedUniversities = await _userService.fetchUniversities();
+    try {
+      List<String> _fetchedUniversities = await _userService.fetchUniversities();
 
-    for (String university in _fetchedUniversities) {
-      setState(() {
-        _universities.add(DropdownMenuItem(child: Text(university), value: university));
-      });
+      for (String university in _fetchedUniversities) {
+        setState(() {
+          _universities.add(DropdownMenuItem(child: Text(university), value: university));
+        });
+      }
+    } catch(error) {
+      NotificationOverlay.error("Unis/FHs können nicht geladen werden: " + error.toString());
     }
   }
 
