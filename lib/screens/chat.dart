@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_mobile/models/chat.dart';
 import 'package:frontend_mobile/models/message.dart';
 import 'package:frontend_mobile/models/user.dart';
+import 'package:frontend_mobile/screens/view_offer.dart';
 import 'package:frontend_mobile/services/chat_service.dart';
 import 'package:frontend_mobile/services/rating_service.dart';
 import 'package:frontend_mobile/services/store_service.dart';
@@ -398,6 +399,18 @@ class _CreatedChatScreen extends State<ChatScreen> {
                     _showDeleteDialogChat(snapshot.data);
                   },
                   icon: Icon(Icons.delete),
+                ),
+                IconButton(
+                  onPressed: () {
+                    if(snapshot.data != null)
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ViewOffer(offerId: snapshot.data.offer.id)
+                          )
+                      );
+                  },
+                  icon: Icon(Icons.local_offer),
                 ),
                 IconButton(
                   onPressed: () {

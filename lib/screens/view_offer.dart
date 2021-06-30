@@ -174,8 +174,8 @@ class _ViewOfferState extends State<ViewOffer> {
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Text(
-                            "Achtung: Das Angebot wurde schon verkauft!",
-                            style: TextStyle(fontSize: 25),
+                            "Achtung: Das Angebot wurde verkauft!",
+                            style: TextStyle(fontSize: 25, color: Colors.deepOrangeAccent),
                           ),
                         ),
                       ),

@@ -10,7 +10,13 @@ Widget createChatCard(BuildContext context, Chat chat) {
       child: Column(
         children: [
           ListTile(
-            title: Text(chat.offer.title),
+            title: chat.offer.sold == true
+              ? Text(chat.offer.title + " - Verkauft",
+                  style: TextStyle(
+                    color: Colors.deepOrangeAccent
+                  ),
+                )
+              : Text(chat.offer.title),
             subtitle: chat.offer.user.id == StoreService.store.state.user.id
                 ? Text("Käufer: " + chat.user.firstName + " " + chat.user.lastName)
                 : Text("Anbieter: " + chat.offer.user.firstName + " " + chat.offer.user.lastName),
