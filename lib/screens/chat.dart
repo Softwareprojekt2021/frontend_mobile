@@ -29,6 +29,7 @@ class _CreatedChatScreen extends State<ChatScreen> {
   final _ratingService = RatingService();
   final TextEditingController textEditingController = new TextEditingController();
   Stream<Chat> chatStream;
+  bool stop = false;
 
   Future<void> _deleteChat(Chat chat) async {
     try {
@@ -133,11 +134,14 @@ class _CreatedChatScreen extends State<ChatScreen> {
 
   Stream<Chat> _refreshChat(Duration interval) async* {
     while (true) {
+      if(stop == true)
+        return;
+
       log(DateTime.now().toString() + " Refreshing Chat..");
       try {
         yield await _chatService.fetchChat(widget.chatId);
       } catch (error) {
-        NotificationOverlay.error("Neue Nachrichten können nicht geladen werden: " + error.toString());
+        NotificationOverlay.error("Nachrichten können nicht geladen werden: " + error.toString());
       } finally {
         await Future.delayed(interval);
       }
@@ -380,6 +384,12 @@ class _CreatedChatScreen extends State<ChatScreen> {
   }
 
   @override
+  void dispose() {
+    stop = true;
+    super.dispose();
+  }
+
+  @override
   initState() {
     super.initState();
     chatStream = _refreshChat(Duration(seconds: 5));
@@ -396,7 +406,8 @@ class _CreatedChatScreen extends State<ChatScreen> {
               actions: [
                 IconButton(
                   onPressed: () {
-                    _showDeleteDialogChat(snapshot.data);
+                    if(snapshot.data != null)
+                      _showDeleteDialogChat(snapshot.data);
                   },
                   icon: Icon(Icons.delete),
                 ),
