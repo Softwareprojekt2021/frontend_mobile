@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend_mobile/components/side_bar.dart';
 import 'package:frontend_mobile/models/chat.dart';
 import 'package:frontend_mobile/models/message.dart';
 import 'package:frontend_mobile/models/user.dart';
@@ -15,8 +16,9 @@ import 'package:frontend_mobile/util/notification.dart';
 
 class ChatScreen extends StatefulWidget {
   final int chatId;
+  final bool drawBar;
 
-  ChatScreen({this.chatId});
+  ChatScreen({this.chatId, this.drawBar});
 
   @override
   State<StatefulWidget> createState() {
@@ -403,45 +405,46 @@ class _CreatedChatScreen extends State<ChatScreen> {
       stream: chatStream,
       builder: (BuildContext context, AsyncSnapshot<Chat> snapshot) {
         return Scaffold(
-            appBar: AppBar(
-              title: snapshot.data == null ? Text("Chat") : Text(snapshot.data.offer.title),
-              actions: [
-                IconButton(
-                  onPressed: () {
-                    if(snapshot.data != null)
-                      _showDeleteDialogChat(snapshot.data);
-                  },
-                  icon: Icon(Icons.delete),
-                ),
-                IconButton(
-                  onPressed: () {
-                    if(snapshot.data != null)
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ViewOffer(offerId: snapshot.data.offer.id)
-                          )
-                      );
-                  },
-                  icon: Icon(Icons.local_offer),
-                ),
-                IconButton(
-                  onPressed: () {
-                    if(snapshot.data != null)
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return rateDialog(context, StoreService.store.state.user.id == snapshot.data.user.id
-                                ? snapshot.data.offer.user
-                                : snapshot.data.user);
-                          }
-                      );
-                  },
-                  icon: Icon(Icons.star_border),
-                ),
-              ],
-            ),
-            body: buildBody(context, snapshot)
+          drawer: widget.drawBar == true ? SideBar() : null,
+          appBar: AppBar(
+            title: snapshot.data == null ? Text("Chat") : Text(snapshot.data.offer.title),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  if(snapshot.data != null)
+                    _showDeleteDialogChat(snapshot.data);
+                },
+                icon: Icon(Icons.delete),
+              ),
+              IconButton(
+                onPressed: () {
+                  if(snapshot.data != null)
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ViewOffer(offerId: snapshot.data.offer.id)
+                        )
+                    );
+                },
+                icon: Icon(Icons.local_offer),
+              ),
+              IconButton(
+                onPressed: () {
+                  if(snapshot.data != null)
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return rateDialog(context, StoreService.store.state.user.id == snapshot.data.user.id
+                              ? snapshot.data.offer.user
+                              : snapshot.data.user);
+                        }
+                    );
+                },
+                icon: Icon(Icons.star_border),
+              ),
+            ],
+          ),
+          body: buildBody(context, snapshot)
         );
       }
     );
