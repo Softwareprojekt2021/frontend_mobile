@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_mobile/screens/home.dart';
 import 'package:frontend_mobile/services/http_service.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/components/avatar.dart';
@@ -87,7 +88,13 @@ class _SideBarState extends State<SideBar> {
             onTap: () {
               StoreService.setupStore();
               HttpService.removeAuthHeader();
-              Navigator.pushNamed(context, "/home");
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Home()
+                ),
+                ModalRoute.withName("/home")
+              );
               NotificationOverlay.success("Erfolgreich abgemeldet");
             },
           ),
