@@ -6,6 +6,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_mobile/components/side_bar.dart';
 import 'package:frontend_mobile/models/user.dart';
+import 'package:frontend_mobile/services/http_service.dart';
 import 'package:frontend_mobile/services/store_service.dart';
 import 'package:frontend_mobile/services/user_service.dart';
 import 'package:frontend_mobile/components/avatar.dart';
@@ -13,6 +14,8 @@ import 'package:frontend_mobile/stores/user_action.dart';
 import 'package:frontend_mobile/util/notification.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+
+import 'home.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -124,7 +127,14 @@ class _ProfileState extends State<Profile> {
       });
 
       StoreService.setupStore();
-      Navigator.pushNamed(context, "/home");
+      HttpService.removeAuthHeader();
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Home()
+          ),
+          ModalRoute.withName("/home")
+      );
       NotificationOverlay.success("Profil wurde gelöscht");
     } catch (error) {
       setState(() {
