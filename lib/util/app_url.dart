@@ -1,5 +1,6 @@
 class AppUrl {
-  static const String baseURL = "http://10.0.50.13:5000";
+  //static const String baseURL = "http://10.0.50.13:5000";
+  static const String baseURL = "https://studiboerse.germanywestcentral.cloudapp.azure.com";
 
   static const String login = baseURL + "/login";
   static const String user = baseURL + "/user";
