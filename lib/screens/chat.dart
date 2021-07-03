@@ -290,13 +290,15 @@ class _CreatedChatScreen extends State<ChatScreen> {
       if(snapshot.data.messages == null || snapshot.data.messages.length == 0) {
         return Column(
           children: [
-            Padding(
-              padding: EdgeInsets.only(
-              top: 5, bottom: 5, left: 20, right: 20),
-              child: Bubble(
-                alignment: Alignment.topCenter,
-                child: Text("Keine Nachrichten"),
-            )),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(
+                    top: 5, bottom: 5, left: 20, right: 20),
+                child: Bubble(
+                  alignment: Alignment.topCenter,
+                  child: Text("Keine Nachrichten"),
+                )),
+            ),
             buildTextBox(context, snapshot.data),
           ],
         );
