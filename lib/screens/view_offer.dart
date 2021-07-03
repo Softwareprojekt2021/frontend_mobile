@@ -127,7 +127,7 @@ class _ViewOfferState extends State<ViewOffer> {
     }
 
     for(int index = 0; index < rating.ceil(); index++) {
-      if(index < rating.ceil() && rating % rating.floor() > 0.5) {
+      if(index + 1 > rating && rating % rating.floor() >= 0.5) {
         widgets.add(Icon(Icons.star_half));
       } else {
         widgets.add(Icon(Icons.star));
@@ -189,6 +189,20 @@ class _ViewOfferState extends State<ViewOffer> {
                         ),
                       ),
                     ),
+                    if(snapshot.data.pictures != null)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Bilder",
+                          style: TextStyle(fontSize: 22),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: Icon(Icons.image),
+                        ),
+                      ],
+                    ),
                     if(snapshot.data.pictures != null && snapshot.data.pictures.length > 0)
                       Padding(
                         padding: const EdgeInsets.all(10.0),
@@ -229,6 +243,19 @@ class _ViewOfferState extends State<ViewOffer> {
                             );
                           }
                       ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Informationen",
+                          style: TextStyle(fontSize: 22),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: Icon(Icons.info_rounded),
+                        ),
+                      ],
+                    ),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
@@ -236,7 +263,17 @@ class _ViewOfferState extends State<ViewOffer> {
                         child: Text(
                           snapshot.data.compensationType == "Bar"
                               ? "Preis: " + euro.format(snapshot.data.price)
-                              : snapshot.data.compensationType,
+                              : "Art: " + snapshot.data.compensationType,
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          "Standort: " + snapshot.data.user.university,
                           style: TextStyle(fontSize: 18),
                         ),
                       ),
@@ -296,7 +333,7 @@ class _ViewOfferState extends State<ViewOffer> {
                                 Padding(
                                   padding: const EdgeInsets.only(right: 10.0),
                                   child: Text(
-                                    "Bewertung",
+                                    "Bewertung:",
                                     style: TextStyle(fontSize: 18),
                                   ),
                                 ),
