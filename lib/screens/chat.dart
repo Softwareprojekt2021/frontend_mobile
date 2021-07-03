@@ -122,6 +122,7 @@ class _CreatedChatScreen extends State<ChatScreen> {
                 onPressed: () async {
                   Navigator.pop(context, true);
                   await _deleteChat(chat);
+                  stop = true;
                 },
               ),
               TextButton(
@@ -143,7 +144,8 @@ class _CreatedChatScreen extends State<ChatScreen> {
       try {
         yield await _chatService.fetchChat(widget.chatId);
       } catch (error) {
-        NotificationOverlay.error("Nachrichten können nicht geladen werden: " + error.toString());
+        NotificationOverlay.error("Nachrichten können nicht geladen werden, entweder wurde der Chat gelöscht oder der Server ist nicht (mehr) erreichbar");
+        stop = true;
       } finally {
         await Future.delayed(interval);
       }
