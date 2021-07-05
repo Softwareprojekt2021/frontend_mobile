@@ -100,7 +100,7 @@ class _ProfileState extends State<Profile> {
       try {
         await _userService.updateUser(_user);
 
-        await StoreService.store.dispatch(SetUserAction(_user));
+        StoreService.store.dispatch(SetUserAction(_user));
 
         NotificationOverlay.success("Profil wurde aktualisiert");
       } catch (error) {
