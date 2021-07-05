@@ -144,7 +144,7 @@ class _CreatedChatScreen extends State<ChatScreen> {
       try {
         yield await _chatService.fetchChat(widget.chatId);
       } catch (error) {
-        NotificationOverlay.error("Nachrichten können nicht geladen werden, entweder wurde der Chat gelöscht oder der Server ist nicht (mehr) erreichbar");
+        NotificationOverlay.error("(Neue) Nachrichten können nicht geladen werden, entweder wurde der Chat gelöscht oder der Server ist nicht (mehr) erreichbar");
         stop = true;
       } finally {
         await Future.delayed(interval);

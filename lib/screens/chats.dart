@@ -25,7 +25,7 @@ class _CreatedChats extends State<Chats> {
               alignment: Alignment.center,
               child: ListTile(
                   title: Text("Keine Chats gefunden", style: TextStyle(fontSize: 20)),
-                  subtitle: Text("Du hasst zurzeit keine aktiven Chats"),
+                  subtitle: Text("Du hast zurzeit keine aktiven Chats"),
                   leading: Icon(Icons.cancel)
               )
             );
